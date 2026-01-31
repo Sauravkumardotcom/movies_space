@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "cd movies_space && npm run dev",
-    "build": "cd movies_space && npm run build",
+    "build": "cd movies_space && npm run build && node build.js",
     "preview": "cd movies_space && npm run preview",
     "install:all": "npm install && cd movies_space && npm install && cd backend && npm install"
   },
