@@ -1,7 +1,8 @@
 {
-  "buildCommand": "cd movies_space && npm run build",
+  "buildCommand": "cd movies_space && npm install && npm run build",
   "outputDirectory": "movies_space/dist",
   "devCommand": "cd movies_space && npm run dev",
+  "cleanUrls": true,
   "env": {
     "VITE_API_BASE_URL": "@vite_api_base_url",
     "VITE_GOOGLE_APPS_SCRIPT_URL": "@vite_google_apps_script_url",
@@ -9,8 +10,18 @@
   },
   "routes": [
     {
+      "src": "/favicon.ico",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=3600"
+      }
+    },
+    {
       "src": "/assets/(.*)",
-      "dest": "/assets/$1"
+      "dest": "/assets/$1",
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable"
+      }
     },
     {
       "src": "/api/(.*)",
