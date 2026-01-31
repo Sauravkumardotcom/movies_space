@@ -3,9 +3,8 @@
   "private": true,
   "scripts": {
     "dev": "cd movies_space && npm run dev",
-    "build": "cd movies_space && npm run build && node build.js",
-    "preview": "cd movies_space && npm run preview",
-    "install:all": "npm install && cd movies_space && npm install && cd backend && npm install"
+    "build": "cd movies_space && npm run build",
+    "preview": "cd movies_space && npm run preview"
   },
   "engines": {
     "node": "20.x"

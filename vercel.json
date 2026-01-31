@@ -1,6 +1,6 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": "vercel_out",
+  "buildCommand": "cd movies_space && npm run build",
+  "outputDirectory": "movies_space/dist",
   "devCommand": "cd movies_space && npm run dev",
   "cleanUrls": true,
   "trailingSlash": false,
@@ -9,14 +9,10 @@
     "VITE_GOOGLE_APPS_SCRIPT_URL": "@vite_google_apps_script_url",
     "VITE_ADMIN_EMAIL": "@vite_admin_email"
   },
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/index.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
