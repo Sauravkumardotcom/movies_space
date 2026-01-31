@@ -2,27 +2,23 @@
   "buildCommand": "cd movies_space && npm run build",
   "outputDirectory": "movies_space/dist",
   "devCommand": "cd movies_space && npm run dev",
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ],
   "env": {
     "VITE_API_BASE_URL": "@vite_api_base_url",
-    "VITE_GOOGLE_DRIVE_API_KEY": "@vite_google_drive_api_key",
-    "VITE_GOOGLE_DRIVE_FOLDER_ID": "@vite_google_drive_folder_id",
-    "VITE_EMAILJS_SERVICE_ID": "@vite_emailjs_service_id",
-    "VITE_EMAILJS_TEMPLATE_ID": "@vite_emailjs_template_id",
-    "VITE_EMAILJS_PUBLIC_KEY": "@vite_emailjs_public_key"
+    "VITE_GOOGLE_APPS_SCRIPT_URL": "@vite_google_apps_script_url",
+    "VITE_ADMIN_EMAIL": "@vite_admin_email"
   },
-  "functions": {
-    "api/**/*.js": {
-      "runtime": "nodejs20.x"
+  "routes": [
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
-  }
+  ]
 }

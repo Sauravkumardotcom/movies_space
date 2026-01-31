@@ -1,5 +1,13 @@
 {
+  "name": "movies-space-root",
+  "private": true,
   "scripts": {
-    "dev": "next dev"
+    "dev": "cd movies_space && npm run dev",
+    "build": "cd movies_space && npm run build",
+    "preview": "cd movies_space && npm run preview",
+    "install:all": "npm install && cd movies_space && npm install && cd backend && npm install"
+  },
+  "engines": {
+    "node": "20.x"
   }
 }
