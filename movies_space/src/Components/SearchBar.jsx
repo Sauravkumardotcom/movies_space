@@ -81,8 +81,10 @@ const SearchBar = ({
       className="w-full"
     >
       <div className="relative">
-        {/* Search Icon - Larger on Mobile */}
-        <svg
+        {/* Search Icon - Animated */}
+        <motion.svg
+          animate={{ scale: isFocused ? 1.1 : 1 }}
+          transition={{ duration: 0.2 }}
           className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-5 h-5 sm:w-5 sm:h-5 text-gray-400 dark:text-gray-500 pointer-events-none flex-shrink-0"
           fill="none"
           stroke="currentColor"
@@ -94,9 +96,9 @@ const SearchBar = ({
             strokeWidth={2}
             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
           />
-        </svg>
+        </motion.svg>
 
-        {/* Input Field - Mobile First Sizing */}
+        {/* Input Field - Premium with backdrop blur */}
         <input
           type="text"
           value={query}
@@ -105,7 +107,7 @@ const SearchBar = ({
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           placeholder={placeholder}
-          className="w-full bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white pl-10 sm:pl-12 pr-10 sm:pr-12 py-2.5 sm:py-3 rounded-lg border-2 border-gray-300 dark:border-gray-700 hover:border-cyan-400 dark:hover:border-cyan-500/50 focus:border-cyan-500 focus:outline-none transition-all duration-200 placeholder-gray-500 dark:placeholder-gray-400 text-base sm:text-base disabled:opacity-50"
+          className="w-full bg-white/5 dark:bg-white/5 text-gray-900 dark:text-white pl-10 sm:pl-12 pr-10 sm:pr-12 py-2.5 sm:py-3 rounded-lg border border-white/10 dark:border-white/10 hover:border-cyan-500/50 dark:hover:border-cyan-500/50 focus:border-cyan-500/80 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition-all duration-200 placeholder-gray-500 dark:placeholder-gray-400 text-base sm:text-base disabled:opacity-50 backdrop-blur-sm"
           disabled={isLoading}
           autoComplete="off"
           spellCheck="false"
@@ -113,14 +115,16 @@ const SearchBar = ({
 
         {/* Right Actions Container - Touch Friendly Spacing */}
         <div className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-          {/* Clear Button - Larger touch target */}
+          {/* Clear Button - Enhanced with hover */}
           {query.length > 0 && !isLoading && (
             <motion.button
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
               onClick={handleClear}
-              className="p-1.5 sm:p-2 text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-all duration-150 active:scale-95"
+              className="p-1.5 sm:p-2 text-gray-400 dark:text-gray-400 hover:text-white dark:hover:text-white hover:bg-red-600/20 dark:hover:bg-red-600/20 rounded transition-all duration-150"
               title="Clear search"
               aria-label="Clear search"
             >
@@ -135,11 +139,11 @@ const SearchBar = ({
             </motion.button>
           )}
 
-          {/* Loading Indicator */}
+          {/* Loading Indicator - Enhanced animation */}
           {isLoading && (
             <motion.div
               animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
               className="p-1.5 sm:p-2 text-cyan-500 flex-shrink-0"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
