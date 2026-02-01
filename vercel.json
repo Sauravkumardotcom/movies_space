@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd movies_space && npm run build",
+  "buildCommand": "cd movies_space && npm install && npm run build",
   "outputDirectory": "movies_space/dist",
   "devCommand": "cd movies_space && npm run dev",
   "cleanUrls": true,
