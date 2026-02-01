@@ -7,6 +7,7 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SkeletonMovieDetails } from './SkeletonLoader';
+import { openYouTubeTrailerSearch, getIMDbTrailerLink } from '../services/youtubeService';
 
 const MovieDetailModal = ({ 
   movie, 
@@ -146,12 +147,12 @@ const MovieDetailModal = ({
                       </div>
 
                       {/* Action Buttons - Full Width on Mobile */}
-                      <div className="flex gap-2 flex-col sm:flex-row">
+                      <div className="flex gap-2 flex-col sm:flex-row flex-wrap">
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                           onClick={() => onAddToFavorites?.(movie)}
-                          className={`flex-1 px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg font-semibold transition-colors text-sm sm:text-base ${
+                          className={`flex-1 min-w-max px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg font-semibold transition-colors text-sm sm:text-base ${
                             isFavorite
                               ? 'bg-red-600 text-white'
                               : 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-400 dark:hover:bg-gray-600'
@@ -163,13 +164,35 @@ const MovieDetailModal = ({
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                           onClick={() => onAddToWatchlist?.(movie)}
-                          className={`flex-1 px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg font-semibold transition-colors text-sm sm:text-base ${
+                          className={`flex-1 min-w-max px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg font-semibold transition-colors text-sm sm:text-base ${
                             isInWatchlist
                               ? 'bg-cyan-600 text-white'
                               : 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-400 dark:hover:bg-gray-600'
                           }`}
                         >
                           {isInWatchlist ? '✓ Watchlist' : '+ Watchlist'}
+                        </motion.button>
+                        
+                        {/* Trailer Button */}
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => openYouTubeTrailerSearch(movie.title, movie.year)}
+                          title="Search for trailer on YouTube"
+                          className="flex-1 min-w-max px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg font-semibold transition-colors text-sm sm:text-base bg-purple-600 hover:bg-purple-700 text-white"
+                        >
+                          🎬 Trailer
+                        </motion.button>
+
+                        {/* IMDb Link Button */}
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => window.open(`https://www.imdb.com/title/${movie.id}`, '_blank', 'noopener,noreferrer')}
+                          title="View on IMDb"
+                          className="flex-1 min-w-max px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg font-semibold transition-colors text-sm sm:text-base bg-yellow-600 hover:bg-yellow-700 text-white"
+                        >
+                          IMDb
                         </motion.button>
                       </div>
                     </div>

@@ -103,7 +103,6 @@ export const fetchMovieById = async (imdbID) => {
 
     return formatMovieData(data);
   } catch (error) {
-    console.error('Error fetching movie by ID:', error);
     throw new Error(`Failed to fetch movie details: ${error.message}`);
   }
 };
@@ -175,7 +174,6 @@ export const searchMovies = async (title, options = {}) => {
       error: null
     };
   } catch (error) {
-    console.error('Error searching movies:', error);
     throw new Error(`Search failed: ${error.message}`);
   }
 };
@@ -196,7 +194,6 @@ export const fetchMultipleMovies = async (imdbIDs) => {
     const movies = await Promise.all(moviePromises);
     return movies.filter(movie => movie !== null);
   } catch (error) {
-    console.error('Error fetching multiple movies:', error);
     throw new Error(`Failed to fetch multiple movies: ${error.message}`);
   }
 };

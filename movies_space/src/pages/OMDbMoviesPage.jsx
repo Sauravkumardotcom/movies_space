@@ -176,9 +176,18 @@ const OMDbMoviesPage = () => {
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-red-900/30 border border-red-700 text-red-400 p-4 rounded-lg"
+                className="bg-red-900/30 border border-red-700 text-red-100 p-4 rounded-lg"
               >
-                ⚠️ {error}
+                <div className="flex items-start gap-3">
+                  <span className="text-xl flex-shrink-0">⚠️</span>
+                  <div>
+                    <h3 className="font-semibold text-red-200 mb-1">Search Error</h3>
+                    <p className="text-red-100 text-sm">{error}</p>
+                    <p className="text-red-200/70 text-xs mt-2">
+                      Please try again or search with different keywords
+                    </p>
+                  </div>
+                </div>
               </motion.div>
             )}
 
@@ -203,34 +212,51 @@ const OMDbMoviesPage = () => {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-center py-12"
+                className="text-center py-16 px-4"
               >
-                <p className="text-gray-400 text-lg">
-                  🎬 No movies found for "{searchQuery}"
+                <div className="text-5xl mb-4">🔍</div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  No movies found
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  No results for "<span className="font-semibold text-gray-900 dark:text-white">{searchQuery}</span>"
                 </p>
-                <p className="text-gray-500 text-sm mt-2">
-                  Try searching with different keywords
+                <p className="text-gray-500 dark:text-gray-400 text-sm mb-8">
+                  Try searching with different keywords or check your spelling
                 </p>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={clearSearch}
+                  className="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                >
+                  Clear search
+                </motion.button>
               </motion.div>
             ) : (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-center py-12"
+                className="text-center py-16 px-4"
               >
-                <p className="text-gray-400 text-lg">
-                  🔍 Start searching for movies
+                <div className="text-5xl mb-4">🎬</div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  Start discovering movies
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400 mb-8">
+                  Search for your favorite films, explore ratings, and build your collection
                 </p>
                 {recentlySearched.length > 0 && (
-                  <div className="mt-6">
-                    <p className="text-gray-500 text-sm mb-3">Recently searched:</p>
+                  <div className="mt-8">
+                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 font-medium">Quick access - Recently searched:</p>
                     <div className="flex flex-wrap gap-2 justify-center">
-                      {recentlySearched.slice(0, 5).map((query) => (
+                      {recentlySearched.slice(0, 6).map((query) => (
                         <motion.button
                           key={query}
                           whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
                           onClick={() => handleSearch(query)}
-                          className="bg-gray-800 hover:bg-cyan-600 text-white px-3 py-1 rounded-full text-sm transition-colors"
+                          className="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded-full text-sm transition-colors font-medium"
                         >
                           {query}
                         </motion.button>
@@ -261,12 +287,33 @@ const OMDbMoviesPage = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <p className="text-gray-400 text-lg">❤️ No favorites yet</p>
-                <p className="text-gray-500 text-sm mt-2">
-                  Add movies to your favorites from search results
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-16 px-4"
+              >
+                <div className="text-5xl mb-4">❤️</div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  No favorites yet
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  Start adding your favorite movies to create your personal collection
                 </p>
-              </div>
+                <p className="text-gray-500 dark:text-gray-400 text-sm mb-8">
+                  Click the heart icon on any movie card to add it to your favorites
+                </p>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    setActiveTab('search');
+                    setSearchQuery('');
+                  }}
+                  className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                >
+                  Start searching
+                </motion.button>
+              </motion.div>
             )}
           </motion.div>
         );
@@ -289,12 +336,33 @@ const OMDbMoviesPage = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <p className="text-gray-400 text-lg">📋 Watchlist is empty</p>
-                <p className="text-gray-500 text-sm mt-2">
-                  Add movies to your watchlist to watch later
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-16 px-4"
+              >
+                <div className="text-5xl mb-4">📋</div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  Watchlist is empty
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  Keep track of movies you want to watch later
                 </p>
-              </div>
+                <p className="text-gray-500 dark:text-gray-400 text-sm mb-8">
+                  Click the bookmark icon on any movie card to add it to your watchlist
+                </p>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    setActiveTab('search');
+                    setSearchQuery('');
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                >
+                  Start searching
+                </motion.button>
+              </motion.div>
             )}
           </motion.div>
         );
@@ -321,9 +389,19 @@ const OMDbMoviesPage = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <p className="text-gray-400">📭 No recent searches</p>
-              </div>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-12 px-4"
+              >
+                <div className="text-4xl mb-3">📭</div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                  No recent searches yet
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                  Your search history will appear here
+                </p>
+              </motion.div>
             )}
           </motion.div>
         );

@@ -149,13 +149,6 @@ const VideoPlayer = ({ video, onClose }) => {
 
   const progressPercent = duration ? (currentTime / duration) * 100 : 0;
 
-  // Debug: log video object to check src
-  React.useEffect(() => {
-    console.log('VideoPlayer received video:', video);
-    console.log('Video src:', video?.src);
-    console.log('Video videoUrl:', video?.videoUrl);
-  }, [video]);
-
   // Check if video data is available
   if (!video) {
     return (
@@ -253,9 +246,6 @@ const VideoPlayer = ({ video, onClose }) => {
             onLoadedMetadata={handleLoadedMetadata}
             className="w-full h-full object-contain"
             onError={(e) => {
-              console.error('Video error:', e.target.error);
-              console.error('Video src:', video.src || video.videoUrl);
-              console.error('Full video object:', video);
               const errorMsg = getVideoErrorMessage(e.target.error?.code);
               setVideoError({
                 message: errorMsg,

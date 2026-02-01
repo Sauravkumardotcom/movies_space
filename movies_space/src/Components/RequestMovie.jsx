@@ -18,7 +18,6 @@ const RequestMovie = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle form submission here
-    console.log(formData);
     setIsOpen(false);
     setFormData({ movieName: '', description: '', email: '' });
   };
