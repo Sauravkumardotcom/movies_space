@@ -15,6 +15,7 @@ import GenrePage from './pages/GenrePage';
 import LoginPage from './pages/LoginPage';
 import AdminLoginPage from './pages/AdminLoginPage';
 import AdminPanel from './pages/AdminPanel';
+import OMDbMoviesPage from './pages/OMDbMoviesPage';
 import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 import UploadModal from './components/UploadModal';
 import RequestMovieModal from './components/RequestMovieModal';
@@ -48,6 +49,10 @@ function AppContent() {
       <ErrorBoundary>
         <Router>
           <Routes>
+            {/* OMDb Movie Application */}
+            <Route path="/movies" element={<OMDbMoviesPage />} />
+
+            {/* Original MovieSpace Routes */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route path="/admin/panel" element={<ProtectedAdminRoute><AdminPanel /></ProtectedAdminRoute>} />
