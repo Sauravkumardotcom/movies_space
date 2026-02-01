@@ -37,22 +37,23 @@ const MovieDetailModal = ({
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
+          {/* Backdrop - Premium blur effect */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/80 z-40 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/85 z-40 backdrop-blur-xl"
           />
 
-          {/* Modal - Mobile Fullscreen, Desktop Centered */}
+          {/* Modal - Mobile Fullscreen, Desktop Premium Centered */}
           <motion.div
-            initial={{ opacity: 0, y: 100 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 100 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 w-full md:w-full md:max-w-3xl h-full md:h-auto md:max-h-[90vh] overflow-y-auto bg-gray-50 dark:bg-gray-900 md:rounded-2xl shadow-2xl z-50 md:border md:border-gray-700"
+            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 50, scale: 0.95 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            className="fixed inset-0 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 w-full md:w-full md:max-w-4xl h-full md:h-auto md:max-h-[92vh] overflow-y-auto bg-gradient-to-b from-gray-900 to-black dark:bg-gradient-to-b dark:from-gray-900 dark:to-gray-950 md:rounded-2xl shadow-2xl z-50 md:border md:border-white/10"
           >
             {/* Loading State */}
             {isLoading ? (
@@ -63,10 +64,10 @@ const MovieDetailModal = ({
               <>
                 {/* Close Button - Fixed on Mobile, Absolute on Desktop */}
                 <motion.button
-                  whileHover={{ scale: 1.1 }}
+                  whileHover={{ scale: 1.15 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={onClose}
-                  className="fixed md:absolute top-4 right-4 bg-gray-700 dark:bg-gray-800 hover:bg-red-600 text-white p-2.5 sm:p-3 rounded-full z-50 transition-colors shadow-lg"
+                  className="fixed md:absolute top-4 right-4 bg-gray-800/80 hover:bg-red-600 backdrop-blur-sm text-white p-3 rounded-full z-50 transition-colors shadow-lg border border-white/20"
                   title="Close"
                   aria-label="Close modal"
                 >
@@ -103,7 +104,7 @@ const MovieDetailModal = ({
 
                     {/* Title and Basic Info */}
                     <div className="flex-1 min-w-0">
-                      <h1 className="text-2xl sm:text-3xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2 line-clamp-2">
+                      <h1 className="text-3xl sm:text-4xl md:text-4xl font-bold text-white mb-3 line-clamp-3">
                         {movie.title}
                       </h1>
 

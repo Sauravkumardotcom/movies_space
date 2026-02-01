@@ -198,7 +198,8 @@ const OMDbMoviesPage = () => {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
+                transition={{ duration: 0.3 }}
+                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6"
               >
                 {displayedResults.map((movie) => (
                   <MovieCard
@@ -210,12 +211,12 @@ const OMDbMoviesPage = () => {
               </motion.div>
             ) : searchQuery ? (
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-center py-16 px-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center py-20 px-4"
               >
-                <div className="text-5xl mb-4">🔍</div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                <div className="text-6xl mb-6">🔍</div>
+                <h2 className="text-3xl font-bold text-white mb-3">
                   No movies found
                 </h2>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
@@ -274,10 +275,11 @@ const OMDbMoviesPage = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="space-y-4"
+            transition={{ duration: 0.3 }}
+            className="space-y-6"
           >
             {favorites.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
                 {favorites.map((movie) => (
                   <MovieCard
                     key={movie.id}
@@ -288,15 +290,15 @@ const OMDbMoviesPage = () => {
               </div>
             ) : (
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-center py-16 px-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center py-20 px-4"
               >
-                <div className="text-5xl mb-4">❤️</div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                <div className="text-6xl mb-6">❤️</div>
+                <h2 className="text-3xl font-bold text-white mb-3">
                   No favorites yet
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                <p className="text-gray-400 mb-4 text-lg">
                   Start adding your favorite movies to create your personal collection
                 </p>
                 <p className="text-gray-500 dark:text-gray-400 text-sm mb-8">
@@ -323,10 +325,11 @@ const OMDbMoviesPage = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="space-y-4"
+            transition={{ duration: 0.3 }}
+            className="space-y-6"
           >
             {watchlist.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
                 {watchlist.map((movie) => (
                   <MovieCard
                     key={movie.id}
@@ -337,15 +340,15 @@ const OMDbMoviesPage = () => {
               </div>
             ) : (
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-center py-16 px-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center py-20 px-4"
               >
-                <div className="text-5xl mb-4">📋</div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                <div className="text-6xl mb-6">📋</div>
+                <h2 className="text-3xl font-bold text-white mb-3">
                   Watchlist is empty
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                <p className="text-gray-400 mb-4 text-lg">
                   Keep track of movies you want to watch later
                 </p>
                 <p className="text-gray-500 dark:text-gray-400 text-sm mb-8">
