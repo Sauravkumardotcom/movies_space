@@ -1,9 +1,10 @@
 /**
- * MovieDetailModal Component
- * Displays detailed information about a movie in a modal
+ * MovieDetailModal Component - MOBILE FIRST
+ * Fullscreen on mobile, centered on desktop
+ * Responsive layout with stacking on small screens
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SkeletonMovieDetails } from './SkeletonLoader';
 
@@ -17,6 +18,18 @@ const MovieDetailModal = ({
   isFavorite = false,
   isInWatchlist = false
 }) => {
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
@@ -29,41 +42,42 @@ const MovieDetailModal = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/70 z-40 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/80 z-40 backdrop-blur-sm"
           />
 
-          {/* Modal */}
+          {/* Modal - Mobile Fullscreen, Desktop Centered */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, y: 100 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 100 }}
             transition={{ duration: 0.3 }}
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-gray-900 rounded-2xl shadow-2xl z-50 border border-gray-800"
+            className="fixed inset-0 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 w-full md:w-full md:max-w-3xl h-full md:h-auto md:max-h-[90vh] overflow-y-auto bg-gray-50 dark:bg-gray-900 md:rounded-2xl shadow-2xl z-50 md:border md:border-gray-700"
           >
             {/* Loading State */}
             {isLoading ? (
-              <div className="p-6">
+              <div className="p-4 sm:p-6 md:p-8">
                 <SkeletonMovieDetails />
               </div>
             ) : movie ? (
               <>
-                {/* Close Button */}
+                {/* Close Button - Fixed on Mobile, Absolute on Desktop */}
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={onClose}
-                  className="absolute top-4 right-4 bg-gray-800 hover:bg-red-600 text-white p-2 rounded-full z-10 transition-colors"
+                  className="fixed md:absolute top-4 right-4 bg-gray-700 dark:bg-gray-800 hover:bg-red-600 text-white p-2.5 sm:p-3 rounded-full z-50 transition-colors shadow-lg"
                   title="Close"
+                  aria-label="Close modal"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </motion.button>
 
-                {/* Header with Poster and Title */}
+                {/* Header with Poster and Title - Stacked on Mobile */}
                 <div className="relative">
                   {/* Poster Background */}
-                  <div className="absolute inset-0 h-64 overflow-hidden opacity-20">
+                  <div className="absolute inset-0 h-48 sm:h-64 md:h-64 overflow-hidden opacity-10 dark:opacity-20">
                     <img
                       src={movie.poster}
                       alt={movie.title}
@@ -72,15 +86,15 @@ const MovieDetailModal = ({
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900" />
                   </div>
 
-                  {/* Content */}
-                  <div className="relative p-6 flex gap-6">
+                  {/* Content - Stacked on Mobile */}
+                  <div className="relative p-4 sm:p-6 md:p-8 flex flex-col md:flex-row gap-4 md:gap-6">
                     {/* Poster Image */}
                     <motion.img
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       src={movie.poster}
                       alt={movie.title}
-                      className="w-32 h-48 rounded-lg shadow-lg object-cover flex-shrink-0"
+                      className="w-full sm:w-40 md:w-40 h-auto sm:h-56 md:h-56 rounded-lg shadow-lg object-cover flex-shrink-0"
                       onError={(e) => {
                         e.target.src = 'https://via.placeholder.com/300x450?text=No+Poster';
                       }}
@@ -88,59 +102,59 @@ const MovieDetailModal = ({
 
                     {/* Title and Basic Info */}
                     <div className="flex-1 min-w-0">
-                      <h1 className="text-3xl font-bold text-white mb-2 line-clamp-2">
+                      <h1 className="text-2xl sm:text-3xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2 line-clamp-2">
                         {movie.title}
                       </h1>
 
                       {/* Year and Type */}
-                      <div className="flex gap-3 mb-4">
-                        <span className="bg-cyan-500/20 text-cyan-400 px-3 py-1 rounded text-sm">
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        <span className="bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 px-2.5 py-1 rounded text-xs sm:text-sm font-medium">
                           {movie.year}
                         </span>
                         {movie.type && (
-                          <span className="bg-purple-500/20 text-purple-400 px-3 py-1 rounded text-sm capitalize">
+                          <span className="bg-purple-500/20 text-purple-600 dark:text-purple-400 px-2.5 py-1 rounded text-xs sm:text-sm font-medium capitalize">
                             {movie.type}
                           </span>
                         )}
                         {movie.rated !== 'N/A' && (
-                          <span className="bg-orange-500/20 text-orange-400 px-3 py-1 rounded text-sm">
+                          <span className="bg-orange-500/20 text-orange-600 dark:text-orange-400 px-2.5 py-1 rounded text-xs sm:text-sm font-medium">
                             {movie.rated}
                           </span>
                         )}
                       </div>
 
-                      {/* Rating */}
-                      <div className="flex items-center gap-4 mb-4">
+                      {/* Rating - Responsive */}
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-4">
                         {movie.imdbRating > 0 && (
                           <div className="flex items-center gap-2">
-                            <span className="text-yellow-400 text-2xl font-bold">
+                            <span className="text-yellow-500 text-2xl sm:text-2xl font-bold">
                               ⭐ {movie.imdbRating}
                             </span>
-                            <span className="text-gray-400 text-sm">
+                            <span className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
                               ({movie.imdbVotes})
                             </span>
                           </div>
                         )}
                         {movie.metascore && (
                           <div className="flex items-center gap-2">
-                            <div className="w-12 h-12 bg-cyan-600 rounded flex items-center justify-center">
-                              <span className="text-white font-bold">{movie.metascore}</span>
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-cyan-600 rounded flex items-center justify-center flex-shrink-0">
+                              <span className="text-white font-bold text-sm sm:text-base">{movie.metascore}</span>
                             </div>
-                            <span className="text-gray-400 text-sm">Metascore</span>
+                            <span className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">Metascore</span>
                           </div>
                         )}
                       </div>
 
-                      {/* Action Buttons */}
-                      <div className="flex gap-3">
+                      {/* Action Buttons - Full Width on Mobile */}
+                      <div className="flex gap-2 flex-col sm:flex-row">
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                           onClick={() => onAddToFavorites?.(movie)}
-                          className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                          className={`flex-1 px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg font-semibold transition-colors text-sm sm:text-base ${
                             isFavorite
                               ? 'bg-red-600 text-white'
-                              : 'bg-gray-700 text-white hover:bg-gray-600'
+                              : 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-400 dark:hover:bg-gray-600'
                           }`}
                         >
                           {isFavorite ? '❤️ Favorite' : '🤍 Favorite'}
@@ -149,10 +163,10 @@ const MovieDetailModal = ({
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                           onClick={() => onAddToWatchlist?.(movie)}
-                          className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                          className={`flex-1 px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg font-semibold transition-colors text-sm sm:text-base ${
                             isInWatchlist
                               ? 'bg-cyan-600 text-white'
-                              : 'bg-gray-700 text-white hover:bg-gray-600'
+                              : 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-400 dark:hover:bg-gray-600'
                           }`}
                         >
                           {isInWatchlist ? '✓ Watchlist' : '+ Watchlist'}
@@ -163,65 +177,65 @@ const MovieDetailModal = ({
                 </div>
 
                 {/* Main Content */}
-                <div className="p-6 border-t border-gray-800 space-y-6">
-                  {/* Key Information Grid */}
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="p-4 sm:p-6 md:p-8 border-t border-gray-300 dark:border-gray-800 space-y-4 sm:space-y-6">
+                  {/* Key Information Grid - Responsive Columns */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-3 sm:gap-4">
                     {movie.runtime !== 'N/A' && (
                       <div>
-                        <p className="text-gray-500 text-sm">Runtime</p>
-                        <p className="text-white font-semibold">{movie.runtime}</p>
+                        <p className="text-gray-600 dark:text-gray-500 text-xs sm:text-sm font-medium">Runtime</p>
+                        <p className="text-gray-900 dark:text-white font-semibold text-sm sm:text-base">{movie.runtime}</p>
                       </div>
                     )}
                     {movie.released !== 'N/A' && (
                       <div>
-                        <p className="text-gray-500 text-sm">Released</p>
-                        <p className="text-white font-semibold">{movie.released}</p>
+                        <p className="text-gray-600 dark:text-gray-500 text-xs sm:text-sm font-medium">Released</p>
+                        <p className="text-gray-900 dark:text-white font-semibold text-sm sm:text-base">{movie.released}</p>
                       </div>
                     )}
                     {movie.genre.length > 0 && (
                       <div>
-                        <p className="text-gray-500 text-sm">Genre</p>
-                        <p className="text-white font-semibold text-sm">{movie.genre.join(', ')}</p>
+                        <p className="text-gray-600 dark:text-gray-500 text-xs sm:text-sm font-medium">Genre</p>
+                        <p className="text-gray-900 dark:text-white font-semibold text-xs sm:text-sm">{movie.genre.join(', ')}</p>
                       </div>
                     )}
                     {movie.language !== 'N/A' && (
                       <div>
-                        <p className="text-gray-500 text-sm">Language</p>
-                        <p className="text-white font-semibold">{movie.language}</p>
+                        <p className="text-gray-600 dark:text-gray-500 text-xs sm:text-sm font-medium">Language</p>
+                        <p className="text-gray-900 dark:text-white font-semibold text-sm sm:text-base">{movie.language}</p>
                       </div>
                     )}
                     {movie.country !== 'N/A' && (
                       <div>
-                        <p className="text-gray-500 text-sm">Country</p>
-                        <p className="text-white font-semibold">{movie.country}</p>
+                        <p className="text-gray-600 dark:text-gray-500 text-xs sm:text-sm font-medium">Country</p>
+                        <p className="text-gray-900 dark:text-white font-semibold text-sm sm:text-base">{movie.country}</p>
                       </div>
                     )}
                     {movie.dvdRelease !== 'N/A' && (
                       <div>
-                        <p className="text-gray-500 text-sm">DVD Release</p>
-                        <p className="text-white font-semibold">{movie.dvdRelease}</p>
+                        <p className="text-gray-600 dark:text-gray-500 text-xs sm:text-sm font-medium">DVD Release</p>
+                        <p className="text-gray-900 dark:text-white font-semibold text-sm sm:text-base">{movie.dvdRelease}</p>
                       </div>
                     )}
                   </div>
 
                   {/* Director, Writer, Actors */}
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     {movie.director !== 'N/A' && (
                       <div>
-                        <p className="text-gray-500 text-sm">Director</p>
-                        <p className="text-white">{movie.director}</p>
+                        <p className="text-gray-600 dark:text-gray-500 text-xs sm:text-sm font-medium">Director</p>
+                        <p className="text-gray-900 dark:text-white text-sm sm:text-base">{movie.director}</p>
                       </div>
                     )}
                     {movie.writer !== 'N/A' && (
                       <div>
-                        <p className="text-gray-500 text-sm">Writer</p>
-                        <p className="text-white">{movie.writer}</p>
+                        <p className="text-gray-600 dark:text-gray-500 text-xs sm:text-sm font-medium">Writer</p>
+                        <p className="text-gray-900 dark:text-white text-sm sm:text-base">{movie.writer}</p>
                       </div>
                     )}
                     {movie.actors.length > 0 && (
                       <div>
-                        <p className="text-gray-500 text-sm">Actors</p>
-                        <p className="text-white">{movie.actors.join(', ')}</p>
+                        <p className="text-gray-600 dark:text-gray-500 text-xs sm:text-sm font-medium">Actors</p>
+                        <p className="text-gray-900 dark:text-white text-sm sm:text-base">{movie.actors.join(', ')}</p>
                       </div>
                     )}
                   </div>
@@ -229,28 +243,31 @@ const MovieDetailModal = ({
                   {/* Plot */}
                   {movie.plot !== 'N/A' && (
                     <div>
-                      <p className="text-gray-500 text-sm">Plot</p>
-                      <p className="text-white leading-relaxed">{movie.plot}</p>
+                      <p className="text-gray-600 dark:text-gray-500 text-xs sm:text-sm font-medium">Plot</p>
+                      <p className="text-gray-900 dark:text-white leading-relaxed text-sm sm:text-base">{movie.plot}</p>
                     </div>
                   )}
 
                   {/* Additional Info */}
-                  <div className="space-y-3 pt-4 border-t border-gray-800">
+                  <div className="space-y-2 sm:space-y-3 pt-4 border-t border-gray-300 dark:border-gray-800">
                     {movie.awards !== 'N/A' && (
-                      <p className="text-sm text-yellow-400">🏆 {movie.awards}</p>
+                      <p className="text-xs sm:text-sm text-yellow-600 dark:text-yellow-400">🏆 {movie.awards}</p>
                     )}
                     {movie.boxOffice !== 'N/A' && (
-                      <p className="text-sm text-green-400">💰 {movie.boxOffice}</p>
+                      <p className="text-xs sm:text-sm text-green-600 dark:text-green-400">💰 {movie.boxOffice}</p>
                     )}
                     {movie.production !== 'N/A' && (
-                      <p className="text-sm text-gray-400">🎬 Production: {movie.production}</p>
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">🎬 Production: {movie.production}</p>
                     )}
-                    <p className="text-xs text-gray-500">IMDb ID: {movie.id}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-500">IMDb ID: {movie.id}</p>
                   </div>
+
+                  {/* Bottom Spacing for Mobile */}
+                  <div className="h-4 md:h-0" />
                 </div>
               </>
             ) : (
-              <div className="p-6 text-center text-gray-400">
+              <div className="p-6 text-center text-gray-600 dark:text-gray-400">
                 No movie data available
               </div>
             )}

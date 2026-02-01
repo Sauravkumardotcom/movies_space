@@ -1,6 +1,6 @@
 /**
- * SearchBar Component with Debounce
- * Efficient search input with debounced API calls
+ * SearchBar Component - MOBILE FIRST
+ * Efficient search input with debounce, responsive touch-friendly
  */
 
 import React, { useState, useCallback, useEffect } from 'react';
@@ -14,6 +14,7 @@ const SearchBar = ({
 }) => {
   const [query, setQuery] = useState('');
   const [debounceTimer, setDebounceTimer] = useState(null);
+  const [isFocused, setIsFocused] = useState(false);
 
   /**
    * Handle search with debounce
@@ -80,9 +81,9 @@ const SearchBar = ({
       className="w-full"
     >
       <div className="relative">
-        {/* Search Icon */}
+        {/* Search Icon - Larger on Mobile */}
         <svg
-          className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none"
+          className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-5 h-5 sm:w-5 sm:h-5 text-gray-400 dark:text-gray-500 pointer-events-none flex-shrink-0"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -95,66 +96,73 @@ const SearchBar = ({
           />
         </svg>
 
-        {/* Input Field */}
+        {/* Input Field - Mobile First Sizing */}
         <input
           type="text"
           value={query}
           onChange={handleChange}
           onKeyPress={handleKeyPress}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
           placeholder={placeholder}
-          className="w-full bg-gray-800 text-white pl-12 pr-12 py-3 rounded-lg border-2 border-gray-700 hover:border-cyan-500/50 focus:border-cyan-500 focus:outline-none transition-colors duration-200 placeholder-gray-500"
+          className="w-full bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white pl-10 sm:pl-12 pr-10 sm:pr-12 py-2.5 sm:py-3 rounded-lg border-2 border-gray-300 dark:border-gray-700 hover:border-cyan-400 dark:hover:border-cyan-500/50 focus:border-cyan-500 focus:outline-none transition-all duration-200 placeholder-gray-500 dark:placeholder-gray-400 text-base sm:text-base disabled:opacity-50"
           disabled={isLoading}
+          autoComplete="off"
+          spellCheck="false"
         />
 
-        {/* Clear Button */}
-        {query.length > 0 && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            onClick={handleClear}
-            disabled={isLoading}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors disabled:opacity-50"
-            title="Clear search"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </motion.button>
-        )}
+        {/* Right Actions Container - Touch Friendly Spacing */}
+        <div className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+          {/* Clear Button - Larger touch target */}
+          {query.length > 0 && !isLoading && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              onClick={handleClear}
+              className="p-1.5 sm:p-2 text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-all duration-150 active:scale-95"
+              title="Clear search"
+              aria-label="Clear search"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </motion.button>
+          )}
 
-        {/* Loading Indicator */}
-        {isLoading && query.length > 0 && (
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-cyan-500"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </motion.div>
-        )}
+          {/* Loading Indicator */}
+          {isLoading && (
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              className="p-1.5 sm:p-2 text-cyan-500 flex-shrink-0"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </motion.div>
+          )}
+        </div>
       </div>
 
-      {/* Search Hints */}
-      {query.length === 0 && (
+      {/* Search Hints - Mobile Friendly */}
+      {query.length === 0 && !isFocused && (
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="text-gray-500 text-sm mt-2"
+          className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm mt-1.5 px-1"
         >
-          💡 Start typing to search movies. Use Enter to search manually.
+          💡 Start typing to search movies
         </motion.p>
       )}
     </motion.div>

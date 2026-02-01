@@ -1,14 +1,15 @@
 /**
  * OMDbMoviesPage - Main page component for OMDb movie search and exploration
+ * Mobile-first responsive design with clean header
  * Features: Search with debounce, favorites, watchlist, sorting, filtering
  */
 
-import React, { useState, useCallback, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useCallback, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import SearchBar from '../Components/SearchBar';
 import MovieCard from '../Components/MovieCard';
 import MovieDetailModal from '../Components/MovieDetailModal';
-import { SkeletonGrid, SkeletonSearchResults } from '../Components/SkeletonLoader';
+import { SkeletonGrid } from '../Components/SkeletonLoader';
 import useOMDb from '../hooks/useOMDb';
 import useMovieStore from '../store/useMovieStore';
 
@@ -333,64 +334,165 @@ const OMDbMoviesPage = () => {
   };
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}`}>
-      {/* Header */}
-      <div className="bg-gradient-to-r from-gray-900 to-gray-800 border-b border-gray-800 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
-                🎬 OMDb Movies
-              </h1>
-              <p className="text-gray-400 text-sm mt-1">
-                Search, discover, and manage your movie collection
-              </p>
+    <div className={`min-h-screen flex flex-col ${isDarkMode ? 'bg-gray-950 text-white' : 'bg-gray-50 text-gray-900'}`}>
+      {/* ===== HEADER - MOBILE FIRST ===== */}
+      <motion.header
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.3 }}
+        className={`sticky top-0 z-40 w-full border-b transition-colors ${
+          isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
+          {/* Mobile Header (stacked) */}
+          <div className="lg:hidden space-y-3">
+            {/* Top Row: Logo + Icons */}
+            <div className="flex items-center justify-between">
+              {/* Logo */}
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="flex items-center gap-2 cursor-pointer"
+                onClick={() => { setActiveTab('search'); setSearchQuery(''); clearSearch(); }}
+              >
+                <span className="text-2xl">🎬</span>
+                <span className="text-lg font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+                  MovieDB
+                </span>
+              </motion.div>
+
+              {/* Right Icons */}
+              <div className="flex items-center gap-2">
+                {/* Favorites Indicator */}
+                {favorites.length > 0 && (
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    onClick={() => setActiveTab('favorites')}
+                    className="relative p-2 rounded-lg hover:bg-gray-800 transition"
+                    title="View favorites"
+                  >
+                    <span className="text-lg">❤️</span>
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                      {favorites.length > 9 ? '9+' : favorites.length}
+                    </span>
+                  </motion.button>
+                )}
+
+                {/* Theme Toggle */}
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  onClick={toggleDarkMode}
+                  className={`p-2 rounded-lg transition ${isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`}
+                  title="Toggle theme"
+                >
+                  {isDarkMode ? '☀️' : '🌙'}
+                </motion.button>
+              </div>
+            </div>
+
+            {/* Search Bar Full Width */}
+            <SearchBar onSearch={handleSearch} isLoading={loading} />
+
+            {/* Tabs - Horizontal Scroll */}
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              {[
+                { key: 'search', label: 'Search', icon: '🔍' },
+                { key: 'favorites', label: 'Favorites', icon: '❤️', count: favorites.length },
+                { key: 'watchlist', label: 'Watchlist', icon: '📋', count: watchlist.length },
+                { key: 'recent', label: 'Recent', icon: '🕐' }
+              ].map((tab) => (
+                <motion.button
+                  key={tab.key}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition ${
+                    activeTab === tab.key
+                      ? 'bg-cyan-600 text-white shadow-lg'
+                      : isDarkMode
+                      ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                      : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                  }`}
+                >
+                  <span>{tab.icon}</span> {tab.label} {tab.count ? `(${tab.count})` : ''}
+                </motion.button>
+              ))}
+            </div>
+          </div>
+
+          {/* Desktop Header (horizontal) */}
+          <div className="hidden lg:flex items-center justify-between gap-6">
+            {/* Logo */}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              className="flex items-center gap-2 cursor-pointer flex-shrink-0"
+              onClick={() => { setActiveTab('search'); setSearchQuery(''); clearSearch(); }}
+            >
+              <span className="text-3xl">🎬</span>
+              <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+                MovieDB
+              </span>
+            </motion.div>
+
+            {/* Search Bar */}
+            <div className="flex-1 max-w-md">
+              <SearchBar onSearch={handleSearch} isLoading={loading} />
+            </div>
+
+            {/* Tabs */}
+            <div className="flex gap-2">
+              {[
+                { key: 'search', label: 'Search', icon: '🔍' },
+                { key: 'favorites', label: 'Favorites', icon: '❤️', count: favorites.length },
+                { key: 'watchlist', label: 'Watchlist', icon: '📋', count: watchlist.length },
+                { key: 'recent', label: 'Recent', icon: '🕐' }
+              ].map((tab) => (
+                <motion.button
+                  key={tab.key}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`px-4 py-2 rounded-lg font-medium transition ${
+                    activeTab === tab.key
+                      ? 'bg-cyan-600 text-white shadow-lg'
+                      : isDarkMode
+                      ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                      : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                  }`}
+                >
+                  {tab.icon} {tab.label} {tab.count ? `(${tab.count})` : ''}
+                </motion.button>
+              ))}
             </div>
 
             {/* Theme Toggle */}
             <motion.button
               whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
               onClick={toggleDarkMode}
-              className="bg-gray-800 hover:bg-gray-700 text-white p-3 rounded-full transition-colors"
-              title="Toggle dark/light mode"
+              className={`p-2.5 rounded-lg transition ${isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`}
+              title="Toggle theme"
             >
               {isDarkMode ? '☀️' : '🌙'}
             </motion.button>
           </div>
-
-          {/* Tabs */}
-          <div className="flex gap-2 overflow-x-auto">
-            {[
-              { key: 'search', label: '🔍 Search', icon: '🔍' },
-              { key: 'favorites', label: `❤️ Favorites ${favorites.length > 0 ? `(${favorites.length})` : ''}`, icon: '❤️' },
-              { key: 'watchlist', label: `📋 Watchlist ${watchlist.length > 0 ? `(${watchlist.length})` : ''}`, icon: '📋' },
-              { key: 'recent', label: '🕐 Recent', icon: '🕐' }
-            ].map((tab) => (
-              <motion.button
-                key={tab.key}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setActiveTab(tab.key)}
-                className={`px-4 py-2 rounded-lg font-semibold transition-colors whitespace-nowrap ${
-                  activeTab === tab.key
-                    ? 'bg-cyan-600 text-white'
-                    : 'bg-gray-800 text-gray-400 hover:text-white'
-                }`}
-              >
-                {tab.label}
-              </motion.button>
-            ))}
-          </div>
         </div>
-      </div>
+      </motion.header>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {renderTabContent()}
-      </div>
+      {/* ===== MAIN CONTENT - MOBILE FIRST ===== */}
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-4 sm:py-6">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.2 }}
+          >
+            {renderTabContent()}
+          </motion.div>
+        </AnimatePresence>
+      </main>
 
-      {/* Movie Detail Modal */}
+      {/* ===== MOVIE DETAIL MODAL ===== */}
       <MovieDetailModal
         movie={currentMovie}
         isOpen={isDetailOpen}

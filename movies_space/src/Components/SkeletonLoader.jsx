@@ -1,26 +1,52 @@
 /**
- * SkeletonLoader Component
- * Multiple skeleton variations for different contexts
- * Loading placeholders with smooth animations
+ * SkeletonLoader Component - MOBILE FIRST
+ * Multiple skeleton variations with smooth shimmer animation
+ * Responsive loading placeholders for all contexts
  */
 
 import React from 'react';
 import { motion } from 'framer-motion';
 
+const shimmerAnimation = {
+  initial: { backgroundPosition: '200% center' },
+  animate: { backgroundPosition: '-200% center' },
+  transition: { duration: 2, repeat: Infinity, ease: 'linear' }
+};
+
 /**
- * Skeleton Card - for movie cards grid
+ * Base Shimmer Background
+ */
+const ShimmerBg = ({ className = '' }) => (
+  <motion.div
+    initial={shimmerAnimation.initial}
+    animate={shimmerAnimation.animate}
+    transition={shimmerAnimation.transition}
+    className={`bg-gradient-to-r from-gray-700 via-gray-600 to-gray-700 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 bg-[length:200%_100%] ${className}`}
+  />
+);
+
+/**
+ * Skeleton Card - Movie card loading placeholder
+ * Mobile: 1:1 aspect ratio, Desktop: 2:3 aspect ratio
  */
 export const SkeletonCard = () => (
-  <div className="bg-gray-800 rounded-lg overflow-hidden aspect-[2/3] animate-pulse">
-    <div className="w-full h-full bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 bg-[length:200%_100%] animate-[shimmer_2s_infinite]" />
+  <div className="space-y-2">
+    <div className="w-full aspect-square sm:aspect-[2/3] bg-gray-300 dark:bg-gray-800 rounded-lg overflow-hidden">
+      <ShimmerBg className="w-full h-full" />
+    </div>
+    <div className="sm:hidden space-y-1">
+      <ShimmerBg className="h-3 w-3/4 rounded" />
+      <ShimmerBg className="h-2 w-1/2 rounded" />
+    </div>
   </div>
 );
 
 /**
- * Skeleton Grid - multiple cards
+ * Skeleton Grid - Multiple cards responsive
+ * 1 col mobile → 2 col tablet → 3-5 col desktop
  */
 export const SkeletonGrid = ({ count = 10 }) => (
-  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
     {Array.from({ length: count }).map((_, i) => (
       <SkeletonCard key={i} />
     ))}
@@ -28,51 +54,52 @@ export const SkeletonGrid = ({ count = 10 }) => (
 );
 
 /**
- * Skeleton Movie Details
+ * Skeleton Movie Details - Modal/Detail view
+ * Responsive stacking on mobile, horizontal on desktop
  */
 export const SkeletonMovieDetails = () => (
-  <div className="space-y-4 p-6 bg-gray-900 rounded-lg">
-    {/* Poster + Title Section */}
-    <div className="flex gap-6">
-      <div className="w-32 h-48 bg-gray-800 rounded-lg animate-pulse" />
+  <div className="space-y-4">
+    {/* Header Section - Poster + Title */}
+    <div className="flex flex-col sm:flex-row gap-4">
+      <ShimmerBg className="w-full sm:w-40 h-auto sm:h-56 rounded-lg flex-shrink-0" />
       <div className="flex-1 space-y-3">
-        <div className="h-8 bg-gray-800 rounded-lg w-3/4 animate-pulse" />
-        <div className="h-4 bg-gray-800 rounded-lg w-1/2 animate-pulse" />
-        <div className="h-4 bg-gray-800 rounded-lg w-2/3 animate-pulse" />
+        <ShimmerBg className="h-6 sm:h-8 w-3/4 rounded" />
+        <ShimmerBg className="h-4 w-1/2 rounded" />
+        <div className="flex gap-2">
+          <ShimmerBg className="h-6 w-16 rounded" />
+          <ShimmerBg className="h-6 w-20 rounded" />
+          <ShimmerBg className="h-6 w-16 rounded" />
+        </div>
+        <div className="flex gap-2 pt-2">
+          <ShimmerBg className="h-10 flex-1 rounded-lg" />
+          <ShimmerBg className="h-10 flex-1 rounded-lg" />
+        </div>
       </div>
     </div>
 
-    {/* Info Section */}
+    {/* Info Grid */}
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+      {Array(6).fill(0).map((_, i) => (
+        <div key={i} className="space-y-1">
+          <ShimmerBg className="h-3 w-12 rounded" />
+          <ShimmerBg className="h-4 w-full rounded" />
+        </div>
+      ))}
+    </div>
+
+    {/* Director/Writer Section */}
     <div className="space-y-2">
-      <div className="h-4 bg-gray-800 rounded-lg w-full animate-pulse" />
-      <div className="h-4 bg-gray-800 rounded-lg w-full animate-pulse" />
-      <div className="h-4 bg-gray-800 rounded-lg w-3/4 animate-pulse" />
+      <ShimmerBg className="h-3 w-16 rounded" />
+      <ShimmerBg className="h-4 w-full rounded" />
     </div>
 
     {/* Plot Section */}
     <div className="space-y-2">
-      <div className="h-4 bg-gray-800 rounded-lg w-full animate-pulse" />
-      <div className="h-4 bg-gray-800 rounded-lg w-full animate-pulse" />
-      <div className="h-4 bg-gray-800 rounded-lg w-1/2 animate-pulse" />
+      <ShimmerBg className="h-3 w-10 rounded" />
+      <ShimmerBg className="h-4 w-full rounded" />
+      <ShimmerBg className="h-4 w-full rounded" />
+      <ShimmerBg className="h-4 w-3/4 rounded" />
     </div>
-  </div>
-);
-
-/**
- * Skeleton Search Results
- */
-export const SkeletonSearchResults = ({ count = 5 }) => (
-  <div className="space-y-3">
-    {Array.from({ length: count }).map((_, i) => (
-      <div key={i} className="flex gap-3 p-3 bg-gray-800 rounded-lg">
-        <div className="w-20 h-28 bg-gray-700 rounded-lg animate-pulse flex-shrink-0" />
-        <div className="flex-1 space-y-2">
-          <div className="h-4 bg-gray-700 rounded w-3/4 animate-pulse" />
-          <div className="h-3 bg-gray-700 rounded w-1/2 animate-pulse" />
-          <div className="h-3 bg-gray-700 rounded w-2/3 animate-pulse" />
-        </div>
-      </div>
-    ))}
   </div>
 );
 
@@ -80,16 +107,65 @@ export const SkeletonSearchResults = ({ count = 5 }) => (
  * Skeleton Search Bar
  */
 export const SkeletonSearchBar = () => (
-  <div className="h-12 bg-gray-800 rounded-lg animate-pulse w-full" />
+  <ShimmerBg className="h-10 sm:h-11 w-full rounded-lg" />
+);
+
+/**
+ * Skeleton Recent Searches - List style
+ */
+export const SkeletonSearchResults = ({ count = 5 }) => (
+  <div className="space-y-2">
+    {Array.from({ length: count }).map((_, i) => (
+      <ShimmerBg key={i} className="h-10 w-full rounded-lg" />
+    ))}
+  </div>
 );
 
 /**
  * Generic Skeleton Line
  */
-export const SkeletonLine = ({ width = 'w-full', height = 'h-4', className = '' }) => (
-  <div
-    className={`bg-gray-800 rounded-lg animate-pulse ${width} ${height} ${className}`}
-  />
+export const SkeletonLine = ({ 
+  width = 'w-full', 
+  height = 'h-4', 
+  className = '' 
+}) => (
+  <ShimmerBg className={`rounded ${width} ${height} ${className}`} />
+);
+
+/**
+ * Skeleton Header - Navigation bar loading
+ */
+export const SkeletonHeader = () => (
+  <div className="space-y-3 p-4 sm:p-6">
+    {/* Mobile Header */}
+    <div className="lg:hidden space-y-3">
+      <div className="flex justify-between items-center">
+        <ShimmerBg className="h-6 w-24 rounded" />
+        <div className="flex gap-2">
+          <ShimmerBg className="h-10 w-10 rounded-lg" />
+          <ShimmerBg className="h-10 w-10 rounded-lg" />
+        </div>
+      </div>
+      <SkeletonSearchBar />
+      <div className="flex gap-2 overflow-x-auto">
+        {Array(3).fill(0).map((_, i) => (
+          <ShimmerBg key={i} className="h-8 w-24 rounded-lg flex-shrink-0" />
+        ))}
+      </div>
+    </div>
+
+    {/* Desktop Header */}
+    <div className="hidden lg:flex justify-between items-center gap-4">
+      <ShimmerBg className="h-8 w-32 rounded" />
+      <ShimmerBg className="h-11 w-48 rounded-lg" />
+      <div className="flex gap-2">
+        {Array(3).fill(0).map((_, i) => (
+          <ShimmerBg key={i} className="h-10 w-28 rounded-lg" />
+        ))}
+      </div>
+      <ShimmerBg className="h-10 w-10 rounded-lg" />
+    </div>
+  </div>
 );
 
 /**
@@ -100,58 +176,40 @@ export const SkeletonLoader = ({
   count = 1,
   className = '',
 }) => {
-  const getSkeletonClass = () => {
-    return `animate-pulse bg-gradient-to-r from-gray-700 via-gray-600 to-gray-700 ${className}`;
-  };
-
   const renderers = {
     card: () => (
       <div className="space-y-4">
         {Array(count).fill(0).map((_, i) => (
-          <div key={i} className="bg-gray-800 rounded-lg overflow-hidden">
-            <div className={`${getSkeletonClass()} h-48 w-full`} />
-            <div className="p-4 space-y-3">
-              <div className={`${getSkeletonClass()} h-4 w-3/4`} />
-              <div className={`${getSkeletonClass()} h-3 w-1/2`} />
-            </div>
+          <div key={i} className="space-y-2">
+            <ShimmerBg className="h-48 w-full rounded-lg" />
+            <ShimmerBg className="h-4 w-3/4 rounded" />
+            <ShimmerBg className="h-3 w-1/2 rounded" />
           </div>
         ))}
       </div>
     ),
 
-    grid: () => (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {Array(count).fill(0).map((_, i) => (
-          <div key={i} className="bg-gray-800 rounded-lg overflow-hidden">
-            <div className={`${getSkeletonClass()} h-48 w-full`} />
-            <div className="p-3 space-y-2">
-              <div className={`${getSkeletonClass()} h-3 w-4/5`} />
-              <div className={`${getSkeletonClass()} h-2 w-1/3`} />
-            </div>
-          </div>
-        ))}
-      </div>
-    ),
+    grid: () => <SkeletonGrid count={count} />,
 
     text: () => (
       <div className="space-y-2">
         {Array(count).fill(0).map((_, i) => (
-          <div key={i} className={`${getSkeletonClass()} h-4 w-full`} />
+          <ShimmerBg key={i} className="h-4 w-full rounded" />
         ))}
       </div>
     ),
 
     image: () => (
-      <div className={`${getSkeletonClass()} h-48 w-full rounded-lg`} />
+      <ShimmerBg className="h-48 w-full rounded-lg" />
     ),
 
     hero: () => (
       <div className="space-y-4">
-        <div className={`${getSkeletonClass()} h-96 w-full rounded-lg`} />
+        <ShimmerBg className="h-64 sm:h-96 w-full rounded-lg" />
         <div className="space-y-2">
-          <div className={`${getSkeletonClass()} h-8 w-2/3`} />
-          <div className={`${getSkeletonClass()} h-4 w-full`} />
-          <div className={`${getSkeletonClass()} h-4 w-3/4`} />
+          <ShimmerBg className="h-8 w-2/3 rounded" />
+          <ShimmerBg className="h-4 w-full rounded" />
+          <ShimmerBg className="h-4 w-3/4 rounded" />
         </div>
       </div>
     ),
