@@ -2,6 +2,11 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { validateAppsScriptRequest } from './middleware/validators.js';
+import { connectDB, disconnectDB } from './db/connection.js';
+import authRoutes from './routes/auth.js';
+import videoRoutes from './routes/videos.js';
+import googleRoutes from './routes/google.js';
+
 dotenv.config();
 
 const app = express();
@@ -55,13 +60,38 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.status(200).json({ 
-    status: 'Backend server is running',
-    environment: process.env.NODE_ENV,
-    timestamp: new Date().toISOString()
-  });
+app.get('/api/health', async (req, res) => {
+  try {
+    // Check MongoDB connection status
+    const { checkDBHealth } = await import('./db/connection.js');
+    const dbStatus = await checkDBHealth();
+    
+    res.status(200).json({ 
+      status: 'Backend server is running',
+      environment: process.env.NODE_ENV,
+      database: dbStatus,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(200).json({ 
+      status: 'Backend server is running',
+      environment: process.env.NODE_ENV,
+      database: 'disconnected',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
 });
+
+// Authentication routes
+app.use('/api/auth', authRoutes);
+
+// Video search and listing routes
+app.use('/api/videos', videoRoutes);
+app.use('/api/search', videoRoutes);
+
+// Google integration routes
+app.use('/api/google', googleRoutes);
 
 // Proxy endpoint for Google Apps Script requests (handles CORS)
 app.post('/api/apps-script', validateAppsScriptRequest, async (req, res) => {
@@ -93,9 +123,26 @@ app.post('/api/apps-script', validateAppsScriptRequest, async (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`\n🚀 MovieSpace Backend Server Running on http://localhost:${PORT}`);
   console.log(`🌐 CORS Origins: ${allowedOrigins.join(', ')}\n`);
   console.log('📧 Email service: Configured on Frontend');
   console.log('📊 Google Sheets: Using Apps Script Web App\n');
+
+  // Connect to MongoDB
+  try {
+    await connectDB();
+    console.log('✅ Database layer initialized successfully\n');
+  } catch (error) {
+    console.error('❌ Failed to connect to MongoDB:', error.message);
+    console.error('⚠️ Server running but database features will not work');
+    console.error('💡 Make sure MongoDB is running locally or MONGODB_URI is configured\n');
+  }
+
+  // Graceful shutdown
+  process.on('SIGINT', async () => {
+    console.log('\n⏹️ Shutting down server gracefully...');
+    await disconnectDB();
+    process.exit(0);
+  });
 });

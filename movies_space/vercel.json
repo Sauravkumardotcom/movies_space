@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "framework": "vite",
+  "env": {
+    "VITE_BACKEND_URL": {
+      "value": "https://movies-space-api.vercel.app"
+    },
+    "VITE_GOOGLE_APPS_SCRIPT_URL": {
+      "value": "https://script.google.com/macros/s/AKfycbzawsuEIM6TYV7p_7w9L4A1Dk08ORLIg-53c1ouXK-QiLAUHAy3GA8I6TaKvC3JbQh6ow/exec"
+    },
+    "VITE_ADMIN_EMAIL": {
+      "value": "admin@moviespace.app"
+    }
+  },
+  "build": {
+    "env": {
+      "VITE_BACKEND_URL": "https://movies-space-api.vercel.app",
+      "VITE_GOOGLE_APPS_SCRIPT_URL": "https://script.google.com/macros/s/AKfycbzawsuEIM6TYV7p_7w9L4A1Dk08ORLIg-53c1ouXK-QiLAUHAy3GA8I6TaKvC3JbQh6ow/exec",
+      "VITE_ADMIN_EMAIL": "admin@moviespace.app"
+    }
+  },
+  "installCommand": "npm install"
+}
