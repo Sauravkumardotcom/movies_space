@@ -1,7 +1,7 @@
 /**
  * Vercel Serverless Function - Main API Handler
  * Handles all API requests for MovieSpace on Vercel
- * No frontend code, no bundling concerns
+ * PRODUCTION FIX: Proper CORS for Vercel + frontend
  */
 
 const express = require('express');
@@ -11,12 +11,47 @@ const app = express();
 
 // Middleware
 app.use(express.json({ limit: '10mb' }));
-app.use(cors({
-  origin: process.env.VERCEL_URL 
-    ? [`https://${process.env.VERCEL_URL}`, 'http://localhost:3000', 'http://localhost:5173']
-    : '*',
-  credentials: true
-}));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
+// PRODUCTION FIX: Comprehensive CORS for Vercel deployment
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allowed origins
+    const allowedOrigins = [
+      'https://movies-space03.vercel.app',
+      'http://localhost:3000',
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'http://localhost:5000'
+    ];
+
+    // Allow Vercel preview deployments
+    if (process.env.VERCEL_URL && origin && origin.includes('.vercel.app')) {
+      return callback(null, true);
+    }
+
+    // Allow no origin (mobile apps, curl)
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    // Check allowed list
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    callback(new Error('Not allowed by CORS'));
+  },
+  methods: ['POST', 'GET', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  credentials: true,
+  maxAge: 86400
+};
+
+app.use(cors(corsOptions));
+
+// Preflight handler for OPTIONS
+app.options('*', cors(corsOptions));
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -37,9 +72,50 @@ app.get('/api/videos', (req, res) => {
 });
 
 // Auth endpoints
+// PRODUCTION FIX: Admin login with proper validation
+app.post('/api/auth/admin/login', (req, res) => {
+  try {
+    const { password } = req.body;
+
+    if (!password) {
+      return res.status(400).json({
+        success: false,
+        error: 'Password is required'
+      });
+    }
+
+    // Validate admin password from environment
+    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+    
+    if (!ADMIN_PASSWORD) {
+      console.error('⚠️ ADMIN_PASSWORD not configured in environment');
+      return res.status(500).json({
+        success: false,
+        error: 'Server configuration error'
+      });
+    }
+
+    // Simple password validation (use bcrypt in production!)
+    if (password === ADMIN_PASSWORD) {
+      return res.json({
+        success: true,
+        token: 'admin-token-' + Date.now(),
+        message: 'Admin login successful'
+      });
+    }
+
+    res.status(401).json({
+      success: false,
+      error: 'Invalid admin password'
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 app.post('/api/auth/login', (req, res) => {
   try {
-    // TODO: Implement actual authentication
+    // TODO: Implement actual user authentication
     res.json({ success: true, message: 'Login endpoint', token: null });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });

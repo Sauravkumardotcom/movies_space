@@ -3,15 +3,31 @@
 // Backend handles CORS, frontend calls /api/apps-script endpoint
 
 /**
- * Backend API endpoint that proxies to Google Apps Script
+ * PRODUCTION FIX: Intelligent API base URL detection
+ * Supports both localhost development and Vercel production
  */
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+const getBackendURL = () => {
+  // Priority 1: Environment variable
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+
+  // Priority 2: Production Vercel detection
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+    return `${window.location.origin}/api`;
+  }
+
+  // Priority 3: Development
+  return 'http://localhost:5000';
+};
+
+const BACKEND_URL = getBackendURL();
 const APPS_SCRIPT_PROXY = `${BACKEND_URL}/api/apps-script`;
 
 // Validate that backend URL is configured
 const isConfigured = () => {
   if (!BACKEND_URL) {
-    console.warn('⚠️ VITE_BACKEND_URL not configured in .env');
+    console.warn('⚠️ API Base URL not configured');
     return false;
   }
   return true;

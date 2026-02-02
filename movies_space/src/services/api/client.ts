@@ -3,14 +3,33 @@ import axios, { AxiosInstance, AxiosError } from 'axios';
 /**
  * Centralized API Client with interceptors
  * Handles auth, errors, retries, and request validation
+ * 
+ * PRODUCTION FIX: Uses environment variable for API base URL
+ * Fallback logic ensures app works in both dev and production
  */
 
-const BACKEND_URL = 'http://localhost:5000';
-// import.meta.env.VITE_BACKEND_URL can be set in .env file
+// Determine API base URL with intelligent fallback
+const getAPIBaseURL = (): string => {
+  // Priority 1: Environment variable (set in .env)
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+
+  // Priority 2: Vercel production URL (auto-detected)
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+    // On production Vercel, use same domain with /api prefix
+    return `${window.location.origin}/api`;
+  }
+
+  // Priority 3: Development localhost
+  return 'http://localhost:5000';
+};
+
+const BACKEND_URL = getAPIBaseURL();
 
 const client: AxiosInstance = axios.create({
   baseURL: BACKEND_URL,
-  timeout: 10000,
+  timeout: 15000, // Increased for Vercel cold starts
   headers: {
     'Content-Type': 'application/json',
   },
