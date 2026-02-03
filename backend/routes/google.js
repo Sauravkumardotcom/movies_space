@@ -312,4 +312,65 @@ router.post('/sheets/clear', async (req, res) => {
   }
 });
 
+/**
+ * @route   POST /api/send-email
+ * @desc    Send confirmation email via Google Apps Script
+ * @access  Public
+ * @body    {string} email - Recipient email
+ * @body    {string} subject - Email subject
+ * @body    {string} message - Email message
+ * @returns {Object} Success/failure response
+ */
+router.post('/send-email', async (req, res) => {
+  try {
+    const { email, subject, message } = req.body;
+
+    // Validate input
+    if (!email || !subject || !message) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email, subject, and message are required'
+      });
+    }
+
+    // Call Google Apps Script for email
+    const scriptUrl = process.env.VITE_GOOGLE_APPS_SCRIPT_URL;
+    if (!scriptUrl) {
+      console.warn('Google Apps Script URL not configured');
+      return res.status(400).json({
+        success: false,
+        message: 'Email service not configured'
+      });
+    }
+
+    const response = await axios.post(scriptUrl, {
+      action: 'sendEmail',
+      email,
+      subject,
+      message
+    });
+
+    if (response.data.success) {
+      return res.status(200).json({
+        success: true,
+        message: 'Email sent successfully',
+        data: response.data
+      });
+    } else {
+      return res.status(500).json({
+        success: false,
+        message: response.data.message || 'Failed to send email'
+      });
+    }
+  } catch (error) {
+    console.error('Send email error:', error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to send email',
+      error: error.message
+    });
+  }
+});
+
 export default router;

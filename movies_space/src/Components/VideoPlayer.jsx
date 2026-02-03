@@ -46,7 +46,12 @@ const VideoPlayer = ({ video, onClose }) => {
                 setIsPlaying(true);
               })
               .catch(error => {
-                console.warn('Play error:', error);
+                // Handle AbortError (from interrupting play/pause) gracefully
+                if (error.name === 'AbortError') {
+                  console.debug('Play interrupted by pause() call - this is normal');
+                } else {
+                  console.warn('Play error:', error);
+                }
                 // Don't update state on error to prevent state mismatch
               });
           }
