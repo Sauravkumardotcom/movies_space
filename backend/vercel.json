@@ -18,9 +18,7 @@
     }
   ],
   "env": {
-    "NODE_ENV": {
-      "value": "production"
-    }
+    "NODE_ENV": "production"
   },
   "buildCommand": "npm install",
   "devCommand": "node server.js"
