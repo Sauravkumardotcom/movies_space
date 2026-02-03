@@ -5,20 +5,20 @@
   "framework": "vite",
   "env": {
     "VITE_BACKEND_URL": {
-      "value": "https://movies-space-api.vercel.app"
+      "value": "https://backend-j1vfaetyi-saurav-kumars-projects-11451f66.vercel.app"
     },
     "VITE_GOOGLE_APPS_SCRIPT_URL": {
       "value": "https://script.google.com/macros/s/AKfycbzawsuEIM6TYV7p_7w9L4A1Dk08ORLIg-53c1ouXK-QiLAUHAy3GA8I6TaKvC3JbQh6ow/exec"
     },
     "VITE_ADMIN_EMAIL": {
-      "value": "admin@moviespace.app"
+      "value": "souravshakya951@gmail.com"
     }
   },
   "build": {
     "env": {
-      "VITE_BACKEND_URL": "https://movies-space-api.vercel.app",
+      "VITE_BACKEND_URL": "https://backend-j1vfaetyi-saurav-kumars-projects-11451f66.vercel.app",
       "VITE_GOOGLE_APPS_SCRIPT_URL": "https://script.google.com/macros/s/AKfycbzawsuEIM6TYV7p_7w9L4A1Dk08ORLIg-53c1ouXK-QiLAUHAy3GA8I6TaKvC3JbQh6ow/exec",
-      "VITE_ADMIN_EMAIL": "admin@moviespace.app"
+      "VITE_ADMIN_EMAIL": "souravshakya951@gmail.com"
     }
   },
   "installCommand": "npm install"
