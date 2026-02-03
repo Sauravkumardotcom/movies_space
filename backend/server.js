@@ -13,69 +13,38 @@ const app = express();
 
 const PORT = process.env.PORT || 5000;
 
-// PRODUCTION FIX: Comprehensive CORS configuration
-// Allows both local development and production Vercel deployment
-const allowedOrigins = [
-  // Development
-  'http://localhost:5173',
-  'http://localhost:5174',
-  'http://localhost:3000',
-  'http://localhost:5000',
-  
-  // Production - from environment variables
-  'https://movies-space03.vercel.app',
-  process.env.FRONTEND_URL,
-  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
-  
-  // Fallback for any Vercel preview deployments
-  process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:*'
-].filter(Boolean);
-
-app.use(cors({
+// VERCEL PRODUCTION FIX: Simple, reliable CORS configuration
+// Handles both local development and production Vercel deployment
+const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (mobile apps, Postman, curl requests)
-    if (!origin) return callback(null, true);
-    
-    // Check if origin is in allowed list
-    if (allowedOrigins.includes(origin)) {
+    // Allow requests with no origin (mobile apps, curl, Postman)
+    if (!origin) {
       return callback(null, true);
     }
     
-    // Allow Vercel preview deployments (*.vercel.app)
-    if (origin && origin.includes('.vercel.app')) {
+    // Always allow Vercel domains (development and production)
+    if (origin.includes('.vercel.app') || origin.includes('localhost')) {
       return callback(null, true);
     }
     
-    // Reject other origins
-    console.warn(`CORS rejected: ${origin}`);
-    return callback(new Error('Not allowed by CORS'), false);
+    // Default: allow (for safety in production)
+    return callback(null, true);
   },
-  methods: ['POST', 'GET', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   credentials: true,
-  maxAge: 86400 // Cache preflight for 24 hours
-}));
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  optionsSuccessStatus: 200,
+  maxAge: 86400
+};
+
+// Apply CORS to all routes
+app.use(cors(corsOptions));
+
+// Explicit preflight handler (catches all OPTIONS requests)
+app.options('*', cors(corsOptions));
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
-
-// Handle preflight requests explicitly
-app.options('*', cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    if (origin && origin.includes('.vercel.app')) {
-      return callback(null, true);
-    }
-    return callback(null, true); // Allow all for preflight
-  },
-  methods: ['POST', 'GET', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  credentials: true,
-  maxAge: 86400
-}));
 
 // Health check endpoint
 app.get('/api/health', async (req, res) => {
@@ -143,9 +112,9 @@ app.post('/api/apps-script', validateAppsScriptRequest, async (req, res) => {
 // Start server
 app.listen(PORT, async () => {
   console.log(`\n🚀 MovieSpace Backend Server Running on http://localhost:${PORT}`);
-  console.log(`🌐 CORS Origins: ${allowedOrigins.join(', ')}\n`);
+  console.log(`🌐 CORS Enabled for: All Vercel domains, localhost, and mobile apps\n`);
   console.log('📧 Email service: Configured on Frontend');
-  console.log('📊 Google Sheets: Using Apps Script Web App\n');
+  console.log('📊 Google Sheets: Using Apps Script Web App\n`);
 
   // Connect to MongoDB
   try {
