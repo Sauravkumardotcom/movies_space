@@ -23,11 +23,5 @@
     }
   },
   "buildCommand": "npm install",
-  "devCommand": "node server.js",
-  "functions": {
-    "server.js": {
-      "maxDuration": 60,
-      "memory": 1024
-    }
-  }
+  "devCommand": "node server.js"
 }
