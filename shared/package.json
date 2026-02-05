@@ -1,0 +1,15 @@
+{
+  "name": "@movies-space/shared",
+  "version": "1.0.0",
+  "description": "Shared types and utilities between frontend and backend",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

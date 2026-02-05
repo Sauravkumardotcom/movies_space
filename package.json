@@ -1,0 +1,38 @@
+{
+  "name": "movies-space",
+  "version": "1.0.0",
+  "description": "Production-ready unified media platform (Movies, Music, Shorts)",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "shared"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w frontend & npm run dev -w backend",
+    "dev:frontend": "npm run dev -w frontend",
+    "dev:backend": "npm run dev -w backend",
+    "build": "npm run build -w shared && npm run build -w frontend && npm run build -w backend",
+    "build:frontend": "npm run build -w frontend",
+    "build:backend": "npm run build -w backend",
+    "type-check": "npm run type-check --ws",
+    "lint": "npm run lint --ws",
+    "format": "npm run format --ws",
+    "format:check": "npm run format:check --ws",
+    "test": "npm run test --ws",
+    "test:coverage": "npm run test:coverage --ws",
+    "db:setup": "npm run db:setup -w backend",
+    "db:migrate": "npm run db:migrate -w backend",
+    "db:seed": "npm run db:seed -w backend",
+    "clean": "npm run clean --ws && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "concurrently": "^8.2.2",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

@@ -1,0 +1,285 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// AUTH & USER DOMAIN
+// ============================================
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String   @unique
+  password  String
+  avatar    String?
+  bio       String?
+  
+  preferences  Preferences?
+  sessions     Session[]
+  watchlist    Watchlist[]
+  favorites    Favorite[]
+  history      History[]
+  ratings      Rating[]
+  playlists    Playlist[]
+  uploads      Upload[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+}
+
+model Preferences {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  language  String   @default("en")
+  theme     String   @default("dark")
+  notifications Boolean @default(true)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  refreshToken String   @unique
+  expiresAt    DateTime
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId])
+  @@index([refreshToken])
+}
+
+// ============================================
+// MOVIE & TV DOMAIN
+// ============================================
+
+model Movie {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  posterUrl   String?
+  trailerUrl  String?
+  genre       String[] // JSON array
+  year        Int
+  director    String
+  rating      Float    @default(0)
+  duration    Int      // in minutes
+  type        String   @default("movie") // movie | tv
+  viewCount   Int      @default(0)
+  
+  episodes    Episode[]
+  watchlist   Watchlist[]
+  favorites   Favorite[]
+  history     History[]
+  ratings     Rating[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([type])
+  @@index([genre])
+  @@index([year])
+}
+
+model Episode {
+  id        String   @id @default(cuid())
+  showId    String
+  show      Movie    @relation(fields: [showId], references: [id], onDelete: Cascade)
+  
+  title     String
+  season    Int
+  episode   Int
+  duration  Int
+  streamUrl String
+  airDate   String?
+  
+  createdAt DateTime @default(now())
+
+  @@unique([showId, season, episode])
+  @@index([showId])
+}
+
+model Short {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  videoUrl    String
+  thumbnailUrl String?
+  duration    Int
+  creatorId   String
+  
+  likes       Int      @default(0)
+  views       Int      @default(0)
+  
+  favorites   Favorite[]
+  history     History[]
+  ratings     Rating[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([creatorId])
+}
+
+// ============================================
+// MUSIC & AUDIO DOMAIN
+// ============================================
+
+model Music {
+  id        String   @id @default(cuid())
+  title     String
+  artist    String
+  album     String?
+  genre     String
+  duration  Int
+  streamUrl String
+  coverUrl  String?
+  uploaderId String?
+  
+  plays     Int      @default(0)
+  likes     Int      @default(0)
+  
+  playlists Playlist[]
+  favorites Favorite[]
+  history   History[]
+  ratings   Rating[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([artist])
+  @@index([genre])
+  @@index([uploaderId])
+}
+
+model Playlist {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  title       String
+  description String?
+  songs       Music[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Upload {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  title     String
+  duration  Int
+  fileSize  Int
+  mimeType  String
+  status    String   @default("processing") // processing | ready | failed
+  streamUrl String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+// ============================================
+// USER ACTIVITY & ENGAGEMENT
+// ============================================
+
+model Watchlist {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movieId   String
+  movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  
+  addedAt   DateTime @default(now())
+
+  @@unique([userId, movieId])
+  @@index([userId])
+}
+
+model Favorite {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  entityId    String
+  entityType  String   // movie | music | short
+  
+  addedAt     DateTime @default(now())
+
+  @@unique([userId, entityId, entityType])
+  @@index([userId])
+}
+
+model History {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  entityId    String
+  entityType  String   // movie | music | short
+  
+  watchedAt   DateTime @default(now())
+  progress    Int      @default(0) // seconds
+  duration    Int      // seconds
+  
+  movieId     String?
+  movie       Movie?   @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  
+  shortId     String?
+  short       Short?   @relation(fields: [shortId], references: [id], onDelete: Cascade)
+  
+  musicId     String?
+  music       Music?   @relation(fields: [musicId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([watchedAt])
+}
+
+model Rating {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  entityId    String
+  entityType  String   // movie | music | short
+  rating      Int      // 1-5
+  comment     String?
+  
+  movieId     String?
+  movie       Movie?   @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  
+  shortId     String?
+  short       Short?   @relation(fields: [shortId], references: [id], onDelete: Cascade)
+  
+  musicId     String?
+  music       Music?   @relation(fields: [musicId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, entityId, entityType])
+  @@index([entityId])
+}
