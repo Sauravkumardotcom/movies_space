@@ -38,3 +38,5 @@ coverage/
 
 # Nested git repos
 movies_space/.git/
+
+/generated/prisma

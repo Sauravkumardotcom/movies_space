@@ -49,7 +49,7 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 // Health check endpoint
 app.get('/api/health', async (req, res) => {
   try {
-    // Check MongoDB connection status
+    // Check PostgreSQL connection status
     const { checkDBHealth } = await import('./db/connection.js');
     const dbStatus = await checkDBHealth();
     
@@ -114,16 +114,16 @@ app.listen(PORT, async () => {
   console.log(`\n🚀 MovieSpace Backend Server Running on http://localhost:${PORT}`);
   console.log(`🌐 CORS Enabled for: All Vercel domains, localhost, and mobile apps\n`);
   console.log('📧 Email service: Configured on Frontend');
-  console.log('📊 Google Sheets: Using Apps Script Web App\n`);
+  console.log('📊 Google Sheets: Using Apps Script Web App');
 
-  // Connect to MongoDB
+  // Connect to PostgreSQL
   try {
     await connectDB();
     console.log('✅ Database layer initialized successfully\n');
   } catch (error) {
-    console.error('❌ Failed to connect to MongoDB:', error.message);
+    console.error('❌ Failed to connect to PostgreSQL:', error.message);
     console.error('⚠️ Server running but database features will not work');
-    console.error('💡 Make sure MongoDB is running locally or MONGODB_URI is configured\n');
+    console.error('💡 Make sure PostgreSQL is running and DATABASE_URL is configured\n');
   }
 
   // Graceful shutdown

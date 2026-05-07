@@ -1,0 +1,103 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String          @id @default(cuid())
+  email            String          @unique
+  password         String
+  username         String?
+  firstName        String?
+  lastName         String?
+  avatar           String?
+  bio              String?
+  role             String          @default("USER")
+  isVerified       Boolean         @default(false)
+  lastLogin        DateTime?
+  isActive         Boolean         @default(true)
+  preferences      Json?
+  metadata         Json?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  videos           Video[]         @relation("UploaderVideos")
+  favorites        Favorite[]
+  watchHistory     WatchHistory[]
+  movieRequests    MovieRequest[]
+}
+
+model Video {
+  id               String          @id @default(cuid())
+  title            String
+  description      String?
+  url              String
+  poster           String?
+  thumbnail        String?
+  duration         Int?
+  genre            String[]        @default([])
+  rating           Float?
+  releaseDate      DateTime?
+  director         String?
+  cast             String[]        @default([])
+  language         String          @default("en")
+  subtitle         Boolean         @default(false)
+  quality          String          @default("720p")
+  uploadedBy       User?           @relation("UploaderVideos", fields: [uploadedById], references: [id])
+  uploadedById     String?
+  views            BigInt          @default(0)
+  status           String          @default("pending")
+  metadata         Json?
+  isPublic         Boolean         @default(true)
+  tags             String[]        @default([])
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  favorites        Favorite[]
+  watchHistory     WatchHistory[]
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  video     Video    @relation(fields: [videoId], references: [id])
+  videoId   String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, videoId])
+}
+
+model WatchHistory {
+  id            String   @id @default(cuid())
+  user          User     @relation(fields: [userId], references: [id])
+  userId        String
+  video         Video    @relation(fields: [videoId], references: [id])
+  videoId       String
+  watchedAt     DateTime @default(now())
+  duration      Int      @default(0)
+  totalDuration Int      @default(0)
+  completed     Boolean  @default(false)
+  quality       String   @default("720p")
+  deviceType    String   @default("desktop")
+  createdAt     DateTime @default(now())
+}
+
+model MovieRequest {
+  id                 String   @id @default(cuid())
+  title              String
+  type               String   @default("movie")
+  description        String?
+  requestedBy        String
+  requestedByUser    User?    @relation(fields: [requestedByUserId], references: [id])
+  requestedByUserId  String?
+  status             String   @default("pending")
+  rejectionReason    String?
+  additionalDetails  Json?
+  votes              Int      @default(1)
+  voters             String[] @default([])
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
