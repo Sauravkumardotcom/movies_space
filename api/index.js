@@ -16,27 +16,28 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 // PRODUCTION FIX: Comprehensive CORS for Vercel deployment
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allowed origins
+    // Allow Vercel preview deployments and deployed frontend sites
     const allowedOrigins = [
       'https://movies-space03.vercel.app',
+      'https://movies-space-brown.vercel.app',
       'http://localhost:3000',
       'http://localhost:5173',
       'http://localhost:5174',
       'http://localhost:5000'
     ];
 
-    // Allow Vercel preview deployments
-    if (process.env.VERCEL_URL && origin && origin.includes('.vercel.app')) {
-      return callback(null, true);
-    }
-
-    // Allow no origin (mobile apps, curl)
+    // Allow no origin (mobile apps, curl, server-to-server)
     if (!origin) {
       return callback(null, true);
     }
 
-    // Check allowed list
+    // Allow explicit origins
     if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    // Allow any Vercel deployment origin for cross-site requests
+    if (origin.endsWith('.vercel.app')) {
       return callback(null, true);
     }
 
