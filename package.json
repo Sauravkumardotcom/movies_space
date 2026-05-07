@@ -4,12 +4,17 @@
   "scripts": {
     "dev": "cd movies_space && npm run dev",
     "build": "cd movies_space && npm run build",
-    "preview": "cd movies_space && npm run preview"
+    "preview": "cd movies_space && npm run preview",
+    "prisma:generate": "prisma generate",
+    "prisma:db:push": "prisma db push",
+    "prisma:studio": "prisma studio"
   },
   "engines": {
     "node": "20.x"
   },
   "dependencies": {
-    "lucide-react": "^0.563.0"
+    "@prisma/client": "^6.15.0",
+    "lucide-react": "^0.563.0",
+    "prisma": "^6.15.0"
   }
 }

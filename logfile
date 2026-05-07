@@ -1,0 +1,8 @@
+2026-05-07 01:38:45.154 UTC [28938] LOG:  starting PostgreSQL 16.13 (Ubuntu 16.13-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit
+2026-05-07 01:38:45.154 UTC [28938] LOG:  could not bind IPv6 address "::1": Address already in use
+2026-05-07 01:38:45.154 UTC [28938] HINT:  Is another postmaster already running on port 5432? If not, wait a few seconds and retry.
+2026-05-07 01:38:45.154 UTC [28938] LOG:  could not bind IPv4 address "127.0.0.1": Address already in use
+2026-05-07 01:38:45.154 UTC [28938] HINT:  Is another postmaster already running on port 5432? If not, wait a few seconds and retry.
+2026-05-07 01:38:45.155 UTC [28938] WARNING:  could not create listen socket for "localhost"
+2026-05-07 01:38:45.155 UTC [28938] FATAL:  could not create any TCP/IP sockets
+2026-05-07 01:38:45.158 UTC [28938] LOG:  database system is shut down

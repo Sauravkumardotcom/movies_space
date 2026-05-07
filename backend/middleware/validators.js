@@ -97,14 +97,3 @@ export const validateSearchQuery = [
   handleValidationErrors
 ];
 
-/**
- * Validation rules for Google Apps Script proxy
- */
-export const validateAppsScriptRequest = [
-  body('action')
-    .trim()
-    .notEmpty().withMessage('Action is required')
-    .isIn(['getVideos', 'searchVideos', 'getTrendingVideos', 'getVideosByGenre', 'getGenres'])
-    .withMessage('Invalid action'),
-  handleValidationErrors
-];

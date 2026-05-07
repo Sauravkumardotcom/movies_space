@@ -1,11 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { validateAppsScriptRequest } from './middleware/validators.js';
 import { connectDB, disconnectDB } from './db/connection.js';
 import authRoutes from './routes/auth.js';
 import videoRoutes from './routes/videos.js';
-import googleRoutes from './routes/google.js';
 
 dotenv.config();
 
@@ -77,44 +75,12 @@ app.use('/api/auth', authRoutes);
 app.use('/api/videos', videoRoutes);
 app.use('/api/search', videoRoutes);
 
-// Google integration routes
-app.use('/api/google', googleRoutes);
-
-// Proxy endpoint for Google Apps Script requests (handles CORS)
-app.post('/api/apps-script', validateAppsScriptRequest, async (req, res) => {
-  try {
-    const GOOGLE_APPS_SCRIPT_URL = process.env.VITE_GOOGLE_APPS_SCRIPT_URL;
-    
-    if (!GOOGLE_APPS_SCRIPT_URL) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'VITE_GOOGLE_APPS_SCRIPT_URL not configured in .env' 
-      });
-    }
-
-    const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(req.body)
-    });
-
-    const data = await response.json();
-    res.status(response.status).json(data);
-  } catch (error) {
-    console.error('Apps Script proxy error:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: error.message 
-    });
-  }
-});
-
 // Start server
 app.listen(PORT, async () => {
   console.log(`\n🚀 MovieSpace Backend Server Running on http://localhost:${PORT}`);
   console.log(`🌐 CORS Enabled for: All Vercel domains, localhost, and mobile apps\n`);
   console.log('📧 Email service: Configured on Frontend');
-  console.log('📊 Google Sheets: Using Apps Script Web App');
+  console.log('📊 Google Sheets integration removed; database storage is active');
 
   // Connect to PostgreSQL
   try {
