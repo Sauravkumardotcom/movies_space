@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { connectDB, disconnectDB } from './db/connection.js';
 import authRoutes from './routes/auth.js';
 import videoRoutes from './routes/videos.js';
+import emailRoutes from './routes/email.js';
 
 dotenv.config();
 
@@ -11,7 +12,7 @@ const app = express();
 
 const PORT = process.env.PORT || 5000;
 
-// VERCEL PRODUCTION FIX: Simple, reliable CORS configuration
+// VERCEL PRODUCTION FIX: Comprehensive CORS configuration
 // Handles both local development and production Vercel deployment
 const corsOptions = {
   origin: function (origin, callback) {
@@ -20,8 +21,26 @@ const corsOptions = {
       return callback(null, true);
     }
     
-    // Always allow Vercel domains (development and production)
-    if (origin.includes('.vercel.app') || origin.includes('localhost')) {
+    // Allow specific frontend origins
+    const allowedOrigins = [
+      'https://movies-space-brown.vercel.app',
+      'https://movies-space03.vercel.app',
+      'http://localhost:3000',
+      'http://localhost:5173',
+      'http://localhost:5174'
+    ];
+    
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    // Allow all Vercel deployments (wildcard Vercel domains)
+    if (origin.endsWith('.vercel.app')) {
+      return callback(null, true);
+    }
+    
+    // Allow localhost development
+    if (origin.includes('localhost')) {
       return callback(null, true);
     }
     
@@ -29,10 +48,12 @@ const corsOptions = {
     return callback(null, true);
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  exposedHeaders: ['Content-Length', 'X-JSON-Response-Size'],
   optionsSuccessStatus: 200,
-  maxAge: 86400
+  maxAge: 86400,
+  preflightContinue: false
 };
 
 // Apply CORS to all routes
@@ -71,9 +92,20 @@ app.get('/api/health', async (req, res) => {
 // Authentication routes
 app.use('/api/auth', authRoutes);
 
+// Email routes
+app.use('/api/email', emailRoutes);
+
 // Video search and listing routes
 app.use('/api/videos', videoRoutes);
 app.use('/api/search', videoRoutes);
+
+// Backward compatibility: /api/send-email route points to email service
+app.post('/api/send-email', (req, res, next) => {
+  // Pass to email routes
+  req.baseUrl = '/api/email';
+  req.url = '/send-email';
+  next();
+}, emailRoutes);
 
 // Start server
 app.listen(PORT, async () => {

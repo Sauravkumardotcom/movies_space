@@ -20,11 +20,10 @@
   "env": {
     "NODE_ENV": "production",
     "DATABASE_URL": "@database_url",
-    "MONGODB_URI": "@mongodb_uri",
     "JWT_SECRET": "@jwt_secret",
     "JWT_REFRESH_SECRET": "@jwt_refresh_secret",
     "EMAIL_USER": "@email_user",
     "EMAIL_PASS": "@email_pass",
     "ADMIN_EMAIL": "@admin_email"
   }
-}
+}}
