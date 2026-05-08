@@ -14,19 +14,18 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // PRODUCTION FIX: Comprehensive CORS for Vercel deployment
+const allowedOrigins = [
+  'https://movies-space-shakyalabs.vercel.app',
+  'https://movies-space03.vercel.app',
+  'https://movies-space-brown.vercel.app',
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5000'
+];
+
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow Vercel preview deployments and deployed frontend sites
-    const allowedOrigins = [
-      'https://movies-space-shakyalabs.vercel.app',
-      'https://movies-space03.vercel.app',
-      'https://movies-space-brown.vercel.app',
-      'http://localhost:3000',
-      'http://localhost:5173',
-      'http://localhost:5174',
-      'http://localhost:5000'
-    ];
-
     // Allow no origin (mobile apps, curl, server-to-server)
     if (!origin) {
       return callback(null, true);
@@ -51,6 +50,18 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+// Ensure Access-Control headers are applied even when an error occurs
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app'))) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+  }
+  next();
+});
 
 // Preflight handler for OPTIONS
 app.options('*', cors(corsOptions));
