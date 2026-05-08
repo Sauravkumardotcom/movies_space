@@ -18,6 +18,7 @@ const corsOptions = {
   origin: function (origin, callback) {
     // Allow Vercel preview deployments and deployed frontend sites
     const allowedOrigins = [
+      'https://movies-space-shakyalabs.vercel.app',
       'https://movies-space03.vercel.app',
       'https://movies-space-brown.vercel.app',
       'http://localhost:3000',
@@ -44,7 +45,7 @@ const corsOptions = {
     callback(new Error('Not allowed by CORS'));
   },
   methods: ['POST', 'GET', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
   credentials: true,
   maxAge: 86400
 };

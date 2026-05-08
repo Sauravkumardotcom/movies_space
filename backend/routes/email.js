@@ -10,11 +10,31 @@ const router = express.Router();
  * ==========================================
  */
 
+const allowedOrigins = [
+  'https://movies-space-shakyalabs.vercel.app',
+  'https://movies-space03.vercel.app',
+  'https://movies-space-brown.vercel.app',
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://localhost:5174'
+];
+
 const corsOptions = {
-  origin: 'https://movies-space-shakyalabs.vercel.app',
+  origin: function (origin, callback) {
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+      return callback(null, true);
+    }
+
+    callback(new Error('Not allowed by CORS'));
+  },
   methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin'],
   credentials: true,
+  optionsSuccessStatus: 200,
 };
 
 /**
@@ -87,21 +107,11 @@ router.post(
      * MANUAL CORS HEADERS
      * Important for Vercel serverless functions
      */
-
-    res.setHeader(
-      'Access-Control-Allow-Origin',
-      'https://movies-space-shakyalabs.vercel.app'
-    );
-
-    res.setHeader(
-      'Access-Control-Allow-Methods',
-      'GET, POST, OPTIONS'
-    );
-
-    res.setHeader(
-      'Access-Control-Allow-Headers',
-      'Content-Type, Authorization'
-    );
+    const requestOrigin = req.headers.origin || 'https://movies-space-shakyalabs.vercel.app';
+    res.setHeader('Access-Control-Allow-Origin', requestOrigin);
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, Origin');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
 
     try {
       /**
