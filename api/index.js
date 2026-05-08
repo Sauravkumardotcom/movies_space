@@ -9,10 +9,6 @@ const cors = require('cors');
 
 const app = express();
 
-// Middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ limit: '10mb', extended: true }));
-
 // PRODUCTION FIX: Comprehensive CORS for Vercel deployment
 const allowedOrigins = [
   'https://movies-space-shakyalabs.vercel.app',
@@ -50,6 +46,8 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Ensure Access-Control headers are applied even when an error occurs
 app.use((req, res, next) => {

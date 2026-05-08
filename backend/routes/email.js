@@ -31,11 +31,15 @@ const corsOptions = {
 
     callback(new Error('Not allowed by CORS'));
   },
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin'],
+  methods: ['GET', 'POST', 'OPTIONS', 'HEAD'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
   credentials: true,
-  optionsSuccessStatus: 200,
+  optionsSuccessStatus: 204,
+  preflightContinue: false,
 };
+
+router.use(cors(corsOptions));
+router.options('*', cors(corsOptions));
 
 /**
  * ==========================================
@@ -55,19 +59,26 @@ const initializeTransporter = () => {
 
   try {
     transporter = nodemailer.createTransport({
-      service: 'gmail',
-
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
-
+      tls: {
+        rejectUnauthorized: false,
+      },
       connectionTimeout: 10000,
       greetingTimeout: 10000,
       socketTimeout: 10000,
     });
 
-    console.log('✅ Email transporter initialized successfully');
+    transporter.verify().then(() => {
+      console.log('✅ Email transporter initialized and verified successfully');
+    }).catch((verifyError) => {
+      console.warn('⚠️ Email transporter verification warning:', verifyError.message);
+    });
 
     return transporter;
   } catch (error) {
@@ -89,10 +100,6 @@ initializeTransporter();
  * ==========================================
  */
 
-router.options('/send-email', cors(corsOptions));
-
-router.options('/test', cors(corsOptions));
-
 /**
  * ==========================================
  * SEND EMAIL ROUTE
@@ -101,18 +108,7 @@ router.options('/test', cors(corsOptions));
 
 router.post(
   '/send-email',
-  cors(corsOptions),
   async (req, res) => {
-    /**
-     * MANUAL CORS HEADERS
-     * Important for Vercel serverless functions
-     */
-    const requestOrigin = req.headers.origin || 'https://movies-space-shakyalabs.vercel.app';
-    res.setHeader('Access-Control-Allow-Origin', requestOrigin);
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, Origin');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-
     try {
       /**
        * VALIDATE METHOD
@@ -364,14 +360,7 @@ router.post(
 
 router.post(
   '/test',
-  cors(corsOptions),
   async (req, res) => {
-
-    res.setHeader(
-      'Access-Control-Allow-Origin',
-      'https://movies-space-shakyalabs.vercel.app'
-    );
-
     try {
       const { email } = req.body;
 

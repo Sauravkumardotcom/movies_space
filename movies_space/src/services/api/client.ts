@@ -30,7 +30,7 @@ const getAPIBaseURL = (): string => {
   return 'http://localhost:5000';
 };
 
-const BACKEND_URL = getAPIBaseURL();
+const BACKEND_URL = getAPIBaseURL().replace(/\/$/, '');
 console.log('🔗 API Client initialized with BACKEND_URL:', BACKEND_URL);
 
 const client: AxiosInstance = axios.create({
@@ -39,6 +39,7 @@ const client: AxiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true,
 });
 
 /**

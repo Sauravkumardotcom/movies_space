@@ -5,7 +5,7 @@
   "framework": "vite",
   "env": {
     "VITE_BACKEND_URL": {
-      "value": "https://backend-j1vfaetyi-saurav-kumars-projects-11451f66.vercel.app"
+      "value": "https://movies-shakyalabs-backend.vercel.app"
     },
     "VITE_ADMIN_EMAIL": {
       "value": "souravshakya951@gmail.com"
@@ -13,7 +13,7 @@
   },
   "build": {
     "env": {
-      "VITE_BACKEND_URL": "https://backend-j1vfaetyi-saurav-kumars-projects-11451f66.vercel.app",
+      "VITE_BACKEND_URL": "https://movies-shakyalabs-backend.vercel.app",
       "VITE_ADMIN_EMAIL": "souravshakya951@gmail.com"
     }
   },

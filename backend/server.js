@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { connectDB, disconnectDB } from './db/connection.js';
 import authRoutes from './routes/auth.js';
 import videoRoutes from './routes/videos.js';
 import emailRoutes from './routes/email.js';
@@ -14,61 +13,77 @@ const PORT = process.env.PORT || 5000;
 
 // VERCEL PRODUCTION FIX: Comprehensive CORS configuration
 // Handles both local development and production Vercel deployment
+const allowedOrigins = [
+  'https://movies-space-shakyalabs.vercel.app',
+  'https://movies-space-brown.vercel.app',
+  'https://movies-space03.vercel.app',
+  'https://movies-shakyalabs-backend.vercel.app',
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5000'
+];
+
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+  if (origin.endsWith('.vercel.app')) return true;
+  if (origin.includes('localhost')) return true;
+  return false;
+};
+
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (mobile apps, curl, Postman)
     if (!origin) {
       return callback(null, true);
     }
-    
-    // Allow specific frontend origins
-    const allowedOrigins = [
-      'https://movies-space-brown.vercel.app',
-      'https://movies-space03.vercel.app',
-      'http://localhost:3000',
-      'http://localhost:5173',
-      'http://localhost:5174'
-    ];
-    
-    if (allowedOrigins.includes(origin)) {
+
+    if (isAllowedOrigin(origin)) {
       return callback(null, true);
     }
-    
-    // Allow all Vercel deployments (wildcard Vercel domains)
-    if (origin.endsWith('.vercel.app')) {
-      return callback(null, true);
-    }
-    
-    // Allow localhost development
-    if (origin.includes('localhost')) {
-      return callback(null, true);
-    }
-    
-    // Default: allow (for safety in production)
-    return callback(null, true);
+
+    callback(new Error('Not allowed by CORS'));
   },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-  exposedHeaders: ['Content-Length', 'X-JSON-Response-Size'],
-  optionsSuccessStatus: 200,
+  credentials: true,
+  optionsSuccessStatus: 204,
   maxAge: 86400,
   preflightContinue: false
 };
 
-// Apply CORS to all routes
+// Apply CORS BEFORE parsing request bodies
 app.use(cors(corsOptions));
-
-// Explicit preflight handler (catches all OPTIONS requests)
 app.options('*', cors(corsOptions));
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
+app.use((req, res, next) => {
+  console.log(`[BACKEND] ${req.method} ${req.originalUrl} origin=${req.headers.origin || 'none'}`);
+  next();
+});
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && isAllowedOrigin(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS,HEAD');
+    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Requested-With,Accept,Origin');
+  }
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+
+  next();
+});
+
 // Health check endpoint
 app.get('/api/health', async (req, res) => {
   try {
-    // Check PostgreSQL connection status
+    // Check PostgreSQL connection status only if Prisma is available
     const { checkDBHealth } = await import('./db/connection.js');
     const dbStatus = await checkDBHealth();
     
@@ -101,33 +116,43 @@ app.use('/api/search', videoRoutes);
 
 // Backward compatibility: /api/send-email route points to email service
 app.post('/api/send-email', (req, res, next) => {
-  // Pass to email routes
-  req.baseUrl = '/api/email';
   req.url = '/send-email';
   next();
 }, emailRoutes);
 
-// Start server
-app.listen(PORT, async () => {
-  console.log(`\n🚀 MovieSpace Backend Server Running on http://localhost:${PORT}`);
-  console.log(`🌐 CORS Enabled for: All Vercel domains, localhost, and mobile apps\n`);
-  console.log('📧 Email service: Configured on Frontend');
-  console.log('📊 Google Sheets integration removed; database storage is active');
+const startServer = async () => {
+  app.listen(PORT, async () => {
+    console.log(`\n🚀 MovieSpace Backend Server Running on http://localhost:${PORT}`);
+    console.log(`🌐 CORS Enabled for: All Vercel domains, localhost, and mobile apps\n`);
+    console.log('📧 Email service: Configured on Frontend');
+    console.log('📊 Google Sheets integration removed; database storage is active');
 
-  // Connect to PostgreSQL
-  try {
-    await connectDB();
-    console.log('✅ Database layer initialized successfully\n');
-  } catch (error) {
-    console.error('❌ Failed to connect to PostgreSQL:', error.message);
-    console.error('⚠️ Server running but database features will not work');
-    console.error('💡 Make sure PostgreSQL is running and DATABASE_URL is configured\n');
-  }
+    // Connect to PostgreSQL for local development only
+    try {
+      const { connectDB } = await import('./db/connection.js');
+      await connectDB();
+      console.log('✅ Database layer initialized successfully\n');
+    } catch (error) {
+      console.error('❌ Failed to connect to PostgreSQL:', error.message);
+      console.error('⚠️ Server running but database features will not work');
+      console.error('💡 Make sure PostgreSQL is running and DATABASE_URL is configured\n');
+    }
+  });
 
-  // Graceful shutdown
   process.on('SIGINT', async () => {
     console.log('\n⏹️ Shutting down server gracefully...');
-    await disconnectDB();
+    try {
+      const { disconnectDB } = await import('./db/connection.js');
+      await disconnectDB();
+    } catch (error) {
+      console.warn('⚠️ Error during graceful shutdown:', error.message);
+    }
     process.exit(0);
   });
-});
+};
+
+if (!process.env.VERCEL) {
+  startServer();
+}
+
+export default app;

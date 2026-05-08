@@ -55,8 +55,7 @@ export const emailApi = {
     type: string;
     description?: string;
   }) => {
-    const adminEmail = '';
-    // import.meta.env.VITE_ADMIN_EMAIL can be set in .env file
+    const adminEmail = import.meta.env.VITE_ADMIN_EMAIL || '';
     if (!adminEmail) {
       console.warn('Admin email not configured. Skipping admin notification.');
       return { success: true, skipped: true };
