@@ -29,7 +29,7 @@ export const emailApi = {
     }
 
     try {
-      return await client.post('/send-email', {
+      return await client.post('/api/send-email', {
         template: 'requestConfirmation',
         to: data.email,
         data: {
@@ -62,7 +62,7 @@ export const emailApi = {
     }
 
     try {
-      return await client.post('/send-email', {
+      return await client.post('/api/send-email', {
         template: 'adminNotification',
         to: adminEmail,
         data: {
