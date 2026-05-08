@@ -147,6 +147,17 @@ app.post('/auth/logout', (req, res) => {
 });
 
 // Email endpoint - Google Apps Script integration
+app.options('/send-email', (req, res) => {
+  const origin = req.headers.origin;
+  if (origin && (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app'))) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, Origin');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  }
+  res.sendStatus(204);
+});
+
 app.post('/send-email', (req, res) => {
   try {
     const { action, to_email, subject, body } = req.body;
