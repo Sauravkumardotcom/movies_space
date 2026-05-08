@@ -1,45 +1,7 @@
 import express from 'express';
 import nodemailer from 'nodemailer';
-import cors from 'cors';
 
 const router = express.Router();
-
-/**
- * ==========================================
- * CORS CONFIGURATION
- * ==========================================
- */
-
-const allowedOrigins = [
-  'https://movies-space-shakyalabs.vercel.app',
-  'https://movies-space03.vercel.app',
-  'https://movies-space-brown.vercel.app',
-  'http://localhost:3000',
-  'http://localhost:5173',
-  'http://localhost:5174'
-];
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin) {
-      return callback(null, true);
-    }
-
-    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
-      return callback(null, true);
-    }
-
-    callback(new Error('Not allowed by CORS'));
-  },
-  methods: ['GET', 'POST', 'OPTIONS', 'HEAD'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
-  credentials: true,
-  optionsSuccessStatus: 204,
-  preflightContinue: false,
-};
-
-router.use(cors(corsOptions));
-router.options('*', cors(corsOptions));
 
 /**
  * ==========================================
@@ -301,8 +263,17 @@ router.post(
        * SEND EMAIL
        */
 
+      const emailFrom = process.env.EMAIL_FROM || process.env.EMAIL_USER;
+
+      if (!emailFrom) {
+        return res.status(503).json({
+          success: false,
+          error: 'Email sender address is not configured'
+        });
+      }
+
       const emailPromise = transporter.sendMail({
-        from: process.env.EMAIL_USER,
+        from: emailFrom,
         to,
         subject,
         html: htmlContent,
@@ -378,8 +349,17 @@ router.post(
         });
       }
 
+      const emailFrom = process.env.EMAIL_FROM || process.env.EMAIL_USER;
+
+      if (!emailFrom) {
+        return res.status(503).json({
+          success: false,
+          error: 'Email sender address is not configured'
+        });
+      }
+
       const result = await transporter.sendMail({
-        from: process.env.EMAIL_USER,
+        from: emailFrom,
         to: email,
         subject: '🎉 MovieSpace Test Email',
         html: `
