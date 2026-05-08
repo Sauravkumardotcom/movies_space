@@ -67,7 +67,7 @@ app.use((req, res, next) => {
 app.options('*', cors(corsOptions));
 
 // Health check
-app.get('/api/health', (req, res) => {
+app.get('/health', (req, res) => {
   res.json({ 
     status: 'ok', 
     timestamp: new Date().toISOString(),
@@ -76,7 +76,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // Videos endpoint
-app.get('/api/videos', (req, res) => {
+app.get('/videos', (req, res) => {
   res.json({
     success: true,
     data: [],
@@ -86,7 +86,7 @@ app.get('/api/videos', (req, res) => {
 
 // Auth endpoints
 // PRODUCTION FIX: Admin login with proper validation
-app.post('/api/auth/admin/login', (req, res) => {
+app.post('/auth/admin/login', (req, res) => {
   try {
     const { password } = req.body;
 
@@ -126,7 +126,7 @@ app.post('/api/auth/admin/login', (req, res) => {
   }
 });
 
-app.post('/api/auth/login', (req, res) => {
+app.post('/auth/login', (req, res) => {
   try {
     // TODO: Implement actual user authentication
     res.json({ success: true, message: 'Login endpoint', token: null });
@@ -135,7 +135,7 @@ app.post('/api/auth/login', (req, res) => {
   }
 });
 
-app.post('/api/auth/register', (req, res) => {
+app.post('/auth/register', (req, res) => {
   try {
     // TODO: Implement actual registration
     res.json({ success: true, message: 'Register endpoint' });
@@ -144,12 +144,12 @@ app.post('/api/auth/register', (req, res) => {
   }
 });
 
-app.post('/api/auth/logout', (req, res) => {
+app.post('/auth/logout', (req, res) => {
   res.json({ success: true, message: 'Logout successful' });
 });
 
 // Email endpoint - Google Apps Script integration
-app.post('/api/send-email', (req, res) => {
+app.post('/send-email', (req, res) => {
   try {
     const { action, to_email, subject, body } = req.body;
     
@@ -174,7 +174,7 @@ app.post('/api/send-email', (req, res) => {
 });
 
 // Google Drive endpoints
-app.get('/api/google-drive/folders', (req, res) => {
+app.get('/google-drive/folders', (req, res) => {
   try {
     // TODO: Implement Google Drive folder listing
     res.json({ success: true, data: [], folders: [] });
@@ -183,7 +183,7 @@ app.get('/api/google-drive/folders', (req, res) => {
   }
 });
 
-app.post('/api/google-drive/upload', (req, res) => {
+app.post('/google-drive/upload', (req, res) => {
   try {
     // TODO: Implement Google Drive file upload
     res.json({ 
@@ -197,7 +197,7 @@ app.post('/api/google-drive/upload', (req, res) => {
 });
 
 // Request movie endpoint
-app.post('/api/request-movie', (req, res) => {
+app.post('/request-movie', (req, res) => {
   try {
     const { title, description, email } = req.body;
     
