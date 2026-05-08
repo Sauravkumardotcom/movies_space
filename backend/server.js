@@ -115,6 +115,17 @@ app.use('/api/videos', videoRoutes);
 app.use('/api/search', videoRoutes);
 
 // Backward compatibility: /api/send-email route points to email service
+app.options('/api/send-email', (req, res) => {
+  const origin = req.headers.origin;
+  if (isAllowedOrigin(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, Origin');
+    res.header('Access-Control-Allow-Credentials', 'true');
+  }
+  res.sendStatus(204);
+});
+
 app.post('/api/send-email', (req, res, next) => {
   req.url = '/send-email';
   next();
